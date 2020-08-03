@@ -17,3 +17,10 @@ build/*
 
 # IDE
 .idea/*
+
+
+# Docker
+docker-compose.override.yml
+
+# App
+.env
