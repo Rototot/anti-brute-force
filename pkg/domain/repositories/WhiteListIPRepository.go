@@ -5,8 +5,11 @@ import (
 	"net"
 )
 
+//go:generate mockgen -source=$GOFILE -destination=./mocks/MockWhiteListIPRepository.go -package=mocks
+
 type WhiteListIPRepository interface {
 	Add(ip *entities.WhiteListIP) error
 	Remove(ip *entities.WhiteListIP) error
-	FindBySubnet(subnet net.IPNet) (*entities.WhiteListIP, error)
+	FindOneBySubnet(subnet net.IPNet) (*entities.WhiteListIP, error)
+	FindAll() ([]*entities.WhiteListIP, error)
 }

@@ -14,7 +14,7 @@ type RemoveIpFromWhiteListHandler struct {
 }
 
 func (h *RemoveIpFromWhiteListHandler) Execute(useCase RemoveIpFromWhiteList) error {
-	ip, err := h.ipRepository.FindBySubnet(useCase.Subnet)
+	ip, err := h.ipRepository.FindOneBySubnet(useCase.Subnet)
 	if err != nil {
 		return err
 	}
