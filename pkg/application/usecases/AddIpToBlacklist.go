@@ -7,6 +7,7 @@ import (
 )
 
 type AddIpToBlacklist struct {
+	// todo перейти на ссылки
 	Subnet net.IPNet
 }
 

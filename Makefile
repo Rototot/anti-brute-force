@@ -1,29 +1,33 @@
 help:
 	@echo "Commands:"
-	@echo "make init-dev - init dev env"
-	@echo "make init-prod - init prod env"
-	@echo "make run - run app"
-	@echo "make install - install deps"
-	@echo "make build - compile apps"
+	@echo "make run - run app in docker"
+	@echo "make build - build docker"
+
 	@echo "make tests-unit - run unit tests"
 	@echo "make tests-e2e - run e2e tests"
 
-run: build
-	./build/web
+	@echo "make init-dev - init dev env"
+	@echo "make init-prod - init prod env"
+	@echo "make install - install deps"
 
-build: install
-	rm -r -f bin/*
-	go build -i -o build/web ./cmd/web
+run:
+	docker-compose up -d --build
 
-install:
-	go mod download
-
-tests-unit: install
+tests-unit:
 	go test -race -count 100 ./... -v
 
-tests-e2e: install
+tests-e2e:
 	go test -tags e2e ./... -v -count=1 -parallel=1
 
+dev-run: dev-build
+	./build/app
+
+dev-build: dev-install init-dev
+	rm -r -f build/*
+	go build -i -o build/app .
+
+dev-install:
+	go mod download
 
 init-dev: clear-init
 	cp .env.dist .env

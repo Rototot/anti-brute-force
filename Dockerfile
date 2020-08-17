@@ -3,7 +3,8 @@ FROM golang:1.14 as builder
 
 WORKDIR /app
 COPY . .
-RUN make build
+RUN go mod download
+RUN go build -i -o build/anti-brute-force .
 
 ## app wrapper
 FROM ubuntu:focal
@@ -21,5 +22,5 @@ ENV APP_REDIS_PORT=6379
 
 EXPOSE 80
 
-CMD ["/app/build/web"]
+CMD ["/app/build/anti-brute-force"]
 
