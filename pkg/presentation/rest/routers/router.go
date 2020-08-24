@@ -1,38 +1,55 @@
 package routers
 
 import (
-	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/controllers"
 	"github.com/gorilla/mux"
+	"net/http"
 )
 
-func CreateRouter() *mux.Router {
-	r := mux.NewRouter()
+type ipCrudService interface {
+	Index(res http.ResponseWriter, req *http.Request)
+	Create(res http.ResponseWriter, req *http.Request)
+	Delete(res http.ResponseWriter, req *http.Request)
+}
+
+type rateLimiterService interface {
+	Attempt(res http.ResponseWriter, req *http.Request)
+	Reset(res http.ResponseWriter, req *http.Request)
+}
+
+type Router struct {
+	whitelist   ipCrudService
+	blacklist   ipCrudService
+	rateLimiter rateLimiterService
+}
+
+func NewRouter(whitelist ipCrudService, blacklist ipCrudService, rateLimiter rateLimiterService) *Router {
+	return &Router{whitelist: whitelist, blacklist: blacklist, rateLimiter: rateLimiter}
+}
+func (r *Router) Create() *mux.Router {
+	muxRouter := mux.NewRouter()
 
 	// whitelist
-	whitelist := &controllers.WhiteListCrudController{}
-	r.HandleFunc("/whitelists", whitelist.Index).
+	muxRouter.HandleFunc("/whitelists", r.whitelist.Index).
 		Methods("GET")
-	r.HandleFunc("/whitelist", whitelist.Create).
+	muxRouter.HandleFunc("/whitelist", r.whitelist.Create).
 		Methods("POST")
-	r.HandleFunc("/whitelist/{id:[0-9\\./]+}", whitelist.Delete).
+	muxRouter.HandleFunc("/whitelist/{id:[0-9\\./]+}", r.whitelist.Delete).
 		Methods("DELETE")
 
 	// blacklist
-	blacklist := &controllers.BlackListCrudController{}
-	r.HandleFunc("/blacklists", blacklist.Index).
+	muxRouter.HandleFunc("/blacklists", r.blacklist.Index).
 		Methods("GET")
-	r.HandleFunc("/blacklist", blacklist.Create).
+	muxRouter.HandleFunc("/blacklist", r.blacklist.Create).
 		Methods("POST")
-	r.HandleFunc("/blacklist/{id:[0-9\\./]+}", blacklist.Delete).
+	muxRouter.HandleFunc("/blacklist/{id:[0-9\\./]+}", r.blacklist.Delete).
 		Methods("DELETE")
 
 	// rate limiter
-	ratelimit := &controllers.RateLimitController{}
-	r.HandleFunc("/login/attempt", ratelimit.Attempt).
+	muxRouter.HandleFunc("/login/attempt", r.rateLimiter.Attempt).
 		Methods("POST")
 
-	r.HandleFunc("/login/attempt", ratelimit.Reset).
+	muxRouter.HandleFunc("/login/attempt", r.rateLimiter.Reset).
 		Methods("DELETE")
 
-	return r
+	return muxRouter
 }

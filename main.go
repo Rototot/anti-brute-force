@@ -15,8 +15,12 @@ limitations under the License.
 */
 package main
 
-import "github.com/Rototot/anti-brute-force/cmd"
+import (
+	"fmt"
+)
 
 func main() {
-	cmd.Execute()
+
+	fmt.Println("123")
+	//cmd.Execute()
 }

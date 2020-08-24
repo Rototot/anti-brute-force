@@ -2,8 +2,12 @@
 FROM golang:1.14 as builder
 
 WORKDIR /app
-COPY . .
+
+# install packages
+COPY go.mod go.mod
+COPY go.sum go.sum
 RUN go mod download
+
 RUN go build -i -o build/anti-brute-force .
 
 ## app wrapper
