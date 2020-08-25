@@ -27,4 +27,4 @@ jobs:
       run: make dev-build
 
     - name: Test
-      run: make tests-unit
+      run: make test-unit

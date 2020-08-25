@@ -14,6 +14,13 @@ tests-unit:
 tests-e2e:
 	go test -tags e2e ./... -v -count=1 -parallel=1
 
+
+migrate-create:
+	docker-compose run --no-deps migrate create -ext sql migration
+
+migrate-up:
+	docker-compose run --no-deps migrate up
+
 dev-run: dev-build
 	./build/app
 

@@ -16,6 +16,7 @@ FROM ubuntu:focal
 WORKDIR /app
 COPY --from=builder /app/build ./build/
 
+ENV APP_POSTGRES_HOST=app
 ENV APP_POSTGRES_DB=app
 ENV APP_POSTGRES_USER=app
 ENV APP_POSTGRES_PASSWORD=app_pass

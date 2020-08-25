@@ -3,15 +3,15 @@ package repositories
 import (
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"github.com/Rototot/anti-brute-force/pkg/domain/valueObjects"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redis/redis/v8"
 )
 
 type BucketRepository struct {
-	pool *redis.Pool
+	client *redis.Client
 }
 
-func NewBucketRepository(pool *redis.Pool) *BucketRepository {
-	return &BucketRepository{pool: pool}
+func NewBucketRepository(client *redis.Client) *BucketRepository {
+	return &BucketRepository{client: client}
 }
 
 func (r *BucketRepository) FindOneByID(id valueObjects.BucketID) (*entities.Bucket, error) {

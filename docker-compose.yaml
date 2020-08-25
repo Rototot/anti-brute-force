@@ -1,10 +1,13 @@
 version: "3.7"
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
     env_file:
       - .env
     depends_on:
+      - migrate
       - postgres
       - redis
 
@@ -19,3 +22,17 @@ services:
     image: redis:6
     ports:
       - 6379:6379
+
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/migrate/Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./db/migrations:/app/migrations
+      - ./docker/migrate:/opt/migrate
+    depends_on:
+      - postgres
+    command:
+      - create
