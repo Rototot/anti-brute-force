@@ -1,4 +1,4 @@
-package configurators
+package postgres
 
 import (
 	"database/sql"
@@ -7,16 +7,17 @@ import (
 )
 import _ "github.com/jackc/pgx/stdlib"
 
-func NewDatabase(conf configurators.PostgresConfig) (*sql.DB, error) {
+func NewConnection(conf configurators.PostgresConfig) *sql.DB {
 
 	dsn := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
 	db, err := sql.Open("pgx", dsn)
+	// todo add repeater
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	// setting
 	db.SetMaxOpenConns(20)
 
-	return db, nil
+	return db
 }

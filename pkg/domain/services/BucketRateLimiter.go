@@ -10,6 +10,10 @@ type BucketRateLimiter struct {
 	bucketRepository repositories.BucketRepository
 }
 
+func NewBucketRateLimiter(bucketRepository repositories.BucketRepository) *BucketRateLimiter {
+	return &BucketRateLimiter{bucketRepository: bucketRepository}
+}
+
 func (r *BucketRateLimiter) IsLimitExceeded(bucket *entities.Bucket) (bool, error) {
 	if bucket.IsFull() {
 		return true, constants.ErrAttemptsIsExceeded

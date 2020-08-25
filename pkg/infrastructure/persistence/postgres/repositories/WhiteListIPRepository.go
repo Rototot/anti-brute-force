@@ -7,7 +7,11 @@ import (
 )
 
 type WhiteListIPRepository struct {
-	conn *sql.Conn
+	conn *sql.DB
+}
+
+func NewWhiteListIPRepository(conn *sql.DB) *WhiteListIPRepository {
+	return &WhiteListIPRepository{conn: conn}
 }
 
 func (r *WhiteListIPRepository) Add(ip *entities.WhiteListIP) error {

@@ -10,11 +10,15 @@ type AddIPToWhiteList struct {
 	Subnet net.IPNet
 }
 
-type AddIPToWhiteListHandler struct {
+type addIPToWhiteListHandler struct {
 	ipRepository repositories.WhiteListIPRepository
 }
 
-func (h *AddIPToWhiteListHandler) Execute(useCase AddIPToWhiteList) error {
+func NewAddIPToWhiteListHandler(ipRepository repositories.WhiteListIPRepository) *addIPToWhiteListHandler {
+	return &addIPToWhiteListHandler{ipRepository: ipRepository}
+}
+
+func (h *addIPToWhiteListHandler) Execute(useCase AddIPToWhiteList) error {
 
 	ip, err := h.ipRepository.FindOneBySubnet(useCase.Subnet)
 	if err != nil {

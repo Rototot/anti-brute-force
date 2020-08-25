@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
+	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/httputils"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/queries"
 	"net"
 	"net/http"
@@ -12,30 +13,28 @@ type attemptHandler interface {
 	Execute(useCase usecases.CheckLoginAttempt) error
 }
 
-type resetAttemptsHandler interface {
+type ResetAttemptsHandler interface {
 	Execute(useCase usecases.ResetLoginAttempts) error
 }
 
 type RateLimitController struct {
-	attemptHandler       attemptHandler
-	resetAttemptsHandler resetAttemptsHandler
+	grabber
 
-	validator StructValidator
+	attemptHandler       attemptHandler
+	resetAttemptsHandler ResetAttemptsHandler
+}
+
+func NewRateLimitController(validator StructValidator, attemptHandler attemptHandler, resetAttemptsHandler ResetAttemptsHandler) *RateLimitController {
+	return &RateLimitController{grabber: grabber{validator: validator}, attemptHandler: attemptHandler, resetAttemptsHandler: resetAttemptsHandler}
 }
 
 func (c *RateLimitController) Attempt(res http.ResponseWriter, req *http.Request) {
-	var decoder = json.NewDecoder(req.Body)
 	var query queries.LoginAttemptQuery
 
-	err := decoder.Decode(&query)
-	if err != nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
-	}
-
-	// validate
-	err = c.validator.Struct(query)
-	if err != nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
+	// parse
+	if err := c.grabber.grabBodyAndValidate(res, req, &query); err != nil {
+		httputils.Error(res, httputils.ErrJsonFormat, http.StatusBadRequest)
+		return
 	}
 
 	var useCase = usecases.CheckLoginAttempt{
@@ -44,25 +43,26 @@ func (c *RateLimitController) Attempt(res http.ResponseWriter, req *http.Request
 		IP:       net.ParseIP(query.IP),
 	}
 
-	err = c.attemptHandler.Execute(useCase)
-	if err != nil {
-		http.Error(res, "internal server error", http.StatusInternalServerError)
+	if err := c.attemptHandler.Execute(useCase); err != nil {
+		httputils.Error(res, err, http.StatusInternalServerError)
+		return
 	}
+
+	httputils.Response(res, nil, http.StatusNoContent)
 }
 
 func (c *RateLimitController) Reset(res http.ResponseWriter, req *http.Request) {
-	var decoder = json.NewDecoder(req.Body)
 	var query queries.ResetAttemptsQuery
 
-	err := decoder.Decode(&query)
-	if err != nil {
+	if err := json.NewDecoder(req.Body).Decode(&query); err != nil {
 		http.Error(res, "Invalid query", http.StatusBadRequest)
+		return
 	}
 
 	// validate
-	err = c.validator.Struct(query)
-	if err != nil {
+	if err := c.validator.Struct(query); err != nil {
 		http.Error(res, "Invalid query", http.StatusBadRequest)
+		return
 	}
 
 	var useCase = usecases.ResetLoginAttempts{
@@ -70,8 +70,10 @@ func (c *RateLimitController) Reset(res http.ResponseWriter, req *http.Request) 
 		IP:    net.ParseIP(query.IP),
 	}
 
-	err = c.resetAttemptsHandler.Execute(useCase)
-	if err != nil {
+	if err := c.resetAttemptsHandler.Execute(useCase); err != nil {
 		http.Error(res, "internal server error", http.StatusInternalServerError)
+		return
 	}
+
+	httputils.Response(res, nil, http.StatusNoContent)
 }

@@ -2,10 +2,16 @@ package commands
 
 import (
 	"fmt"
+	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
+	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/controllers"
 	"github.com/spf13/cobra"
+	"net"
 )
 
-func NewWhitelist() *cobra.Command {
+func NewWhitelist(
+	createHandler controllers.CreateWhiteListHandler,
+	removeHandler controllers.RemoveWhiteListHandler,
+) *cobra.Command {
 	var whitelistCmd = &cobra.Command{
 		Use:   "whitelist",
 		Short: "Whitelist control",
@@ -15,32 +21,62 @@ func NewWhitelist() *cobra.Command {
 	}
 
 	whitelistCmd.AddCommand(
-		newWhitelistAdd(),
-		newWhitelistRemove(),
+		newWhitelistAdd(createHandler),
+		newWhitelistRemove(removeHandler),
 	)
 
 	return whitelistCmd
 }
 
-func newWhitelistAdd() *cobra.Command {
+func newWhitelistAdd(createHandler controllers.CreateWhiteListHandler) *cobra.Command {
 	var addCmd = &cobra.Command{
 		Use:   "add",
 		Short: "Add IP network to whitelist",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("cliWhitelistAdd called")
+		RunE: func(cmd *cobra.Command, args []string) error {
+			subnet, err := cmd.Flags().GetIPNet("subnet")
+			if err != nil {
+				return err
+			}
+
+			if err := createHandler.Execute(usecases.AddIPToWhiteList{Subnet: subnet}); err != nil {
+				return err
+			}
+
+			return nil
 		},
+	}
+
+	addCmd.Flags().IPNet("subnet", net.IPNet{}, "Example 192.168.1.1/8")
+	err := addCmd.MarkFlagRequired("subnet")
+	if err != nil {
+		panic(err)
 	}
 
 	return addCmd
 }
 
-func newWhitelistRemove() *cobra.Command {
+func newWhitelistRemove(removeHandler controllers.RemoveWhiteListHandler) *cobra.Command {
 	var removeCmd = &cobra.Command{
 		Use:   "remove",
 		Short: "Remove IP network from whitelist",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("remove called")
+		RunE: func(cmd *cobra.Command, args []string) error {
+			subnet, err := cmd.Flags().GetIPNet("subnet")
+			if err != nil {
+				return err
+			}
+
+			if err := removeHandler.Execute(usecases.RemoveIpFromWhiteList{Subnet: subnet}); err != nil {
+				return err
+			}
+
+			return nil
 		},
+	}
+
+	removeCmd.Flags().IPNet("subnet", net.IPNet{}, "Example 192.168.1.1/8")
+	err := removeCmd.MarkFlagRequired("subnet")
+	if err != nil {
+		panic(err)
 	}
 
 	return removeCmd

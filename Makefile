@@ -1,14 +1,9 @@
 help:
 	@echo "Commands:"
 	@echo "make run - run app in docker"
-	@echo "make build - build docker"
-
 	@echo "make tests-unit - run unit tests"
-	@echo "make tests-e2e - run e2e tests"
-
-	@echo "make init-dev - init dev env"
-	@echo "make init-prod - init prod env"
-	@echo "make install - install deps"
+	@echo "make tests-e2e - run integration tests"
+	@echo "make dev-run - run in dev mod"
 
 run:
 	docker-compose up -d --build
@@ -22,12 +17,12 @@ tests-e2e:
 dev-run: dev-build
 	./build/app
 
-dev-build: dev-install init-dev
+dev-build: init-dev
 	rm -r -f build/*
 	go build -i -o build/app .
 
-dev-install:
-	go mod download
+#dev-install:
+	#go mod download
 
 init-dev: clear-init
 	cp .env.dist .env

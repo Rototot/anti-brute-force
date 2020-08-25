@@ -18,12 +18,16 @@ type bucketCleaner interface {
 	Clean(bucket *entities.Bucket) error
 }
 
-type ResetLoginAttemptsHandler struct {
+type resetLoginAttemptsHandler struct {
 	bucketRepository repositories.BucketRepository
 	bucketCleaner    bucketCleaner
 }
 
-func (h *ResetLoginAttemptsHandler) Execute(useCase *ResetLoginAttempts) error {
+func NewResetLoginAttemptsHandler(bucketRepository repositories.BucketRepository, bucketCleaner bucketCleaner) *resetLoginAttemptsHandler {
+	return &resetLoginAttemptsHandler{bucketRepository: bucketRepository, bucketCleaner: bucketCleaner}
+}
+
+func (h *resetLoginAttemptsHandler) Execute(useCase ResetLoginAttempts) error {
 
 	bucketSearchers := []func() (*entities.Bucket, error){
 		func() (*entities.Bucket, error) {

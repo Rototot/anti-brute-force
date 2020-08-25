@@ -11,11 +11,15 @@ type AddIpToBlacklist struct {
 	Subnet net.IPNet
 }
 
-type AddIpToBlacklistHandler struct {
+type addIpToBlacklistHandler struct {
 	ipRepository repositories.BlackListIPRepository
 }
 
-func (h *AddIpToBlacklistHandler) Execute(useCase AddIpToBlacklist) error {
+func NewAddIpToBlacklistHandler(ipRepository repositories.BlackListIPRepository) *addIpToBlacklistHandler {
+	return &addIpToBlacklistHandler{ipRepository: ipRepository}
+}
+
+func (h *addIpToBlacklistHandler) Execute(useCase AddIpToBlacklist) error {
 
 	ip, err := h.ipRepository.FindBySubnet(useCase.Subnet)
 	if err != nil {

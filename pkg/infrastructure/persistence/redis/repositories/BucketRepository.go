@@ -10,6 +10,10 @@ type BucketRepository struct {
 	pool *redis.Pool
 }
 
+func NewBucketRepository(pool *redis.Pool) *BucketRepository {
+	return &BucketRepository{pool: pool}
+}
+
 func (r *BucketRepository) FindOneByID(id valueObjects.BucketID) (*entities.Bucket, error) {
 	panic("implement me")
 }

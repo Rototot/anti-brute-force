@@ -9,11 +9,15 @@ import (
 
 var ErrInvalidBucketType = errors.New("invalid bucket type")
 
-type BucketFactory struct {
+type bucketFactory struct {
 	conf BucketConfigurator
 }
 
-func (f *BucketFactory) Create(bType constants.BucketType) (*entities.Bucket, error) {
+func NewBucketFactory(conf BucketConfigurator) *bucketFactory {
+	return &bucketFactory{conf: conf}
+}
+
+func (f *bucketFactory) Create(bType constants.BucketType) (*entities.Bucket, error) {
 	switch bType {
 	case constants.BucketTypeIp:
 		bucketCap := f.conf.IpBucketCapacity()

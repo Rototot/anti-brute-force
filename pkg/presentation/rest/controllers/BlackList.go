@@ -1,26 +1,34 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
+	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/httputils"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/queries"
 	"net"
 	"net/http"
 )
 
-type createBlackListHandler interface {
+type CreateBlackListHandler interface {
 	Execute(useCase usecases.AddIpToBlacklist) error
 }
 
-type removeBlackListHandler interface {
+type RemoveBlackListHandler interface {
 	Execute(useCase usecases.RemoveIpFromBlackList) error
 }
 
 type BlackListCrudController struct {
-	createHandler createBlackListHandler
-	removeHandler removeBlackListHandler
+	grabber
 
-	validator StructValidator
+	createHandler CreateBlackListHandler
+	removeHandler RemoveBlackListHandler
+}
+
+func NewBlackListCrudController(
+	validator StructValidator,
+	createHandler CreateBlackListHandler,
+	removeHandler RemoveBlackListHandler,
+) *BlackListCrudController {
+	return &BlackListCrudController{grabber: grabber{validator: validator}, createHandler: createHandler, removeHandler: removeHandler}
 }
 
 func (c *BlackListCrudController) Index(res http.ResponseWriter, req *http.Request) {
@@ -28,61 +36,49 @@ func (c *BlackListCrudController) Index(res http.ResponseWriter, req *http.Reque
 }
 
 func (c *BlackListCrudController) Create(res http.ResponseWriter, req *http.Request) {
-	var decoder = json.NewDecoder(req.Body)
 	var query queries.CreateWhiteListQuery
 
-	err := decoder.Decode(&query)
-	if err != nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
-	}
-
-	// validate
-	err = c.validator.Struct(query)
-	if err != nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
+	// parse
+	if err := c.grabber.grabBodyAndValidate(res, req, &query); err != nil {
+		return
 	}
 
 	_, network, err := net.ParseCIDR(query.Subnet)
 	if err != nil || network == nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
+		httputils.Error(res, httputils.ErrValidation, http.StatusBadRequest)
+		return
 	}
 
-	var useCase = usecases.AddIpToBlacklist{
-		Subnet: *network,
+	var useCase = usecases.AddIpToBlacklist{Subnet: *network}
+
+	if err := c.createHandler.Execute(useCase); err != nil {
+		httputils.Error(res, err, http.StatusInternalServerError)
+		return
 	}
 
-	err = c.createHandler.Execute(useCase)
-	if err != nil {
-		http.Error(res, "internal server error", http.StatusInternalServerError)
-	}
+	httputils.Response(res, nil, http.StatusNoContent)
 }
 
 func (c *BlackListCrudController) Delete(res http.ResponseWriter, req *http.Request) {
-	var decoder = json.NewDecoder(req.Body)
 	var query queries.DeleteWhiteListQuery
 
-	err := decoder.Decode(&query)
-	if err != nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
-	}
-
-	// validate
-	err = c.validator.Struct(query)
-	if err != nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
+	// parse
+	if err := c.grabber.grabBodyAndValidate(res, req, &query); err != nil {
+		return
 	}
 
 	_, network, err := net.ParseCIDR(query.Subnet)
 	if err != nil || network == nil {
-		http.Error(res, "Invalid query", http.StatusBadRequest)
+		httputils.Error(res, httputils.ErrValidation, http.StatusBadRequest)
+		return
 	}
 
-	var useCase = usecases.RemoveIpFromBlackList{
-		Subnet: *network,
+	var useCase = usecases.RemoveIpFromBlackList{Subnet: *network}
+
+	if err := c.removeHandler.Execute(useCase); err != nil {
+		httputils.Error(res, err, http.StatusInternalServerError)
+		return
 	}
 
-	err = c.removeHandler.Execute(useCase)
-	if err != nil {
-		http.Error(res, "internal server error", http.StatusInternalServerError)
-	}
+	httputils.Response(res, nil, http.StatusNoContent)
 }

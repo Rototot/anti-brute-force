@@ -28,14 +28,18 @@ type rateLimiter interface {
 	IsLimitExceeded(bucket *entities.Bucket) (bool, error)
 }
 
-type CheckLoginAttemptHandler struct {
+type checkLoginAttemptHandler struct {
 	bucketRepository repositories.BucketRepository
 	bucketFactory    bucketFactory
 	ipGuard          ipGuard
 	rateLimiter      rateLimiter
 }
 
-func (h *CheckLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
+func NewCheckLoginAttemptHandler(bucketRepository repositories.BucketRepository, bucketFactory bucketFactory, ipGuard ipGuard, rateLimiter rateLimiter) *checkLoginAttemptHandler {
+	return &checkLoginAttemptHandler{bucketRepository: bucketRepository, bucketFactory: bucketFactory, ipGuard: ipGuard, rateLimiter: rateLimiter}
+}
+
+func (h *checkLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
 
 	hasAccess, err := h.ipGuard.HasAccess(useCase.IP)
 	if err != nil {
@@ -76,7 +80,7 @@ func (h *CheckLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
 	return nil
 }
 
-func (h *CheckLoginAttemptHandler) findOrCreateBucket(id valueObjects.BucketID, bType constants.BucketType) (*entities.Bucket, error) {
+func (h *checkLoginAttemptHandler) findOrCreateBucket(id valueObjects.BucketID, bType constants.BucketType) (*entities.Bucket, error) {
 	bucket, err := h.bucketRepository.FindOneByID(id)
 	if err != nil {
 		return nil, err

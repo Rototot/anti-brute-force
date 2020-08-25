@@ -10,6 +10,10 @@ type IPGuard struct {
 	blacklistRepository repositories.BlackListIPRepository
 }
 
+func NewIPGuard(whitelistRepository repositories.WhiteListIPRepository, blacklistRepository repositories.BlackListIPRepository) *IPGuard {
+	return &IPGuard{whitelistRepository: whitelistRepository, blacklistRepository: blacklistRepository}
+}
+
 func (g *IPGuard) HasAccess(ip net.IP) (bool, error) {
 	isForbidden, err := g.isForbidden(ip)
 	if err != nil {

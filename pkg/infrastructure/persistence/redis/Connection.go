@@ -1,4 +1,4 @@
-package configurators
+package redis
 
 import (
 	"fmt"

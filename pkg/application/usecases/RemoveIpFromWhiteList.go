@@ -9,11 +9,15 @@ type RemoveIpFromWhiteList struct {
 	Subnet net.IPNet
 }
 
-type RemoveIpFromWhiteListHandler struct {
+type removeIpFromWhiteListHandler struct {
 	ipRepository repositories.WhiteListIPRepository
 }
 
-func (h *RemoveIpFromWhiteListHandler) Execute(useCase RemoveIpFromWhiteList) error {
+func NewRemoveIpFromWhiteListHandler(ipRepository repositories.WhiteListIPRepository) *removeIpFromWhiteListHandler {
+	return &removeIpFromWhiteListHandler{ipRepository: ipRepository}
+}
+
+func (h *removeIpFromWhiteListHandler) Execute(useCase RemoveIpFromWhiteList) error {
 	ip, err := h.ipRepository.FindOneBySubnet(useCase.Subnet)
 	if err != nil {
 		return err

@@ -10,6 +10,10 @@ type BlackListIPRepository struct {
 	conn *sql.DB
 }
 
+func NewBlackListIPRepository(conn *sql.DB) *BlackListIPRepository {
+	return &BlackListIPRepository{conn: conn}
+}
+
 func (r *BlackListIPRepository) Add(ip *entities.BlackListIP) error {
 	rows, err := r.conn.Query("INSERT INTO public.blacklists (subnet) VALUES (?) RETURNING id", ip.Subnet.String())
 	if err != nil {

@@ -23,7 +23,7 @@ func TestResetLoginAttemptsHandler_Execute(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			h := &ResetLoginAttemptsHandler{
+			h := &resetLoginAttemptsHandler{
 				bucketRepository: tt.fields.bucketRepository,
 				bucketCleaner:    tt.fields.bucketCleaner,
 			}
