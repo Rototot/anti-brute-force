@@ -9,13 +9,8 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    container: golang:1.14
     steps:
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.14
-        id: go
-
       - name: clone code into the Go module directory
         uses: actions/checkout@v2
 
@@ -25,16 +20,11 @@ jobs:
       - name: compile Build
         run: make dev-build
 
-  tests:
-    name: tests
-    runs-on: golang-1.14
+  test-units:
+    name: test units
+    runs-on: ubuntu-latest
+    container: golang:1.14
     steps:
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.14
-        id: go
-
       - name: clone code into the Go module directory
         uses: actions/checkout@v2
 
@@ -44,18 +34,53 @@ jobs:
       - name: test units
         run: make test-unit
 
+  test-e2e:
+    name: test e2e
+    runs-on: ubuntu-latest
+    container: golang:1.14
+    needs: [build, test-units, linter]
+    services:
+      postges:
+        image: postgres:11
+        POSTGRES_DB: app
+        POSTGRES_USER: ${{ secrets.SuperSecret }}
+        POSTGRES_PASSWORD: ${{ secrets.SuperSecret }}
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:6
+        ports:
+          - 6379:6379
+    env:
+      APP_POSTGRES_HOST: postgres
+      APP_POSTGRES_DB: app
+      APP_POSTGRES_USER: ${{ secrets.APP_POSTGRES_USER }}
+      APP_POSTGRES_PASSWORD: ${{ secrets.APP_POSTGRES_PASSWORD }}
+      APP_POSTGRES_PORT: 5432
+      APP_REDIS_DB: 0
+      APP_REDIS_PORT: 6379
+
+    steps:
+      - name: clone code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: install dependencies
+        run: go mod download
+
       - name: test e2e
         run: make test-e2e
 
   linter:
     name: lint
-    runs-on: golang-1.14
+    runs-on: ubuntu-latest
+    container: golang:1.14
     steps:
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v2
-        with:
-          go-version: ^1.14
-        id: go
+#      - name: Set up Go 1.x
+#        uses: actions/setup-go@v2
+#        with:
+#          go-version: ^1.14
+#        id: go
       - uses: actions/checkout@v2
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v1
