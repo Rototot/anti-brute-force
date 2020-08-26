@@ -43,8 +43,8 @@ jobs:
       postges:
         image: postgres:11
         POSTGRES_DB: app
-        POSTGRES_USER: ${{ secrets.SuperSecret }}
-        POSTGRES_PASSWORD: ${{ secrets.SuperSecret }}
+        POSTGRES_USER: ${{ secrets.APP_POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.APP_POSTGRES_PASSWORD }}
         ports:
           - 5432:5432
 
