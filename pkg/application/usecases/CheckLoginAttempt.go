@@ -81,23 +81,12 @@ func (h *CheckLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
 }
 
 func (h *CheckLoginAttemptHandler) findOrCreateBucket(id valueobjects.BucketID, bType constants.BucketType) (*entities.Bucket, error) {
-	bucket, err := h.bucketRepository.FindOneByID(id)
+	bucket, err := h.bucketFactory.Create(bType)
 	if err != nil {
 		return nil, err
 	}
 
-	if bucket == nil {
-		bucket, err = h.bucketFactory.Create(bType)
-		if err != nil {
-			return nil, err
-		}
+	bucket.ID = id
 
-		bucket.ID = id
-		err = h.bucketRepository.Add(bucket)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return bucket, err
+	return bucket, nil
 }

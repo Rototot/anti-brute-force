@@ -1,6 +1,9 @@
 package configurators
 
-import "github.com/spf13/viper"
+import (
+	"os"
+	"strconv"
+)
 
 const (
 	defaultPostgresPort           = 5432
@@ -20,14 +23,27 @@ type PostgresConfig struct {
 	MaxConnections int
 }
 
-func NewPostgresConfig(v *viper.Viper) *PostgresConfig {
-	conf := &PostgresConfig{
-		Host:           v.GetString("APP_POSTGRES_HOST"),
-		User:           v.GetString("APP_POSTGRES_USER"),
-		Password:       v.GetString("APP_POSTGRES_PASSWORD"),
-		Dbname:         v.GetString("APP_POSTGRES_DB"),
-		Port:           v.GetInt("APP_POSTGRES_PORT"),
-		MaxConnections: v.GetInt("APP_POSTGRES_MAX_CONNECTIONS"),
+func NewPostgresConfig() PostgresConfig {
+	conf := PostgresConfig{
+		Host:     os.Getenv("APP_POSTGRES_HOST"),
+		User:     os.Getenv("APP_POSTGRES_USER"),
+		Password: os.Getenv("APP_POSTGRES_PASSWORD"),
+		Dbname:   os.Getenv("APP_POSTGRES_DB"),
+	}
+	var err error
+
+	if os.Getenv("APP_POSTGRES_PORT") != "" {
+		conf.Port, err = strconv.Atoi(os.Getenv("APP_POSTGRES_PORT"))
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if os.Getenv("APP_POSTGRES_MAX_CONNECTIONS") != "" {
+		conf.MaxConnections, err = strconv.Atoi(os.Getenv("APP_POSTGRES_MAX_CONNECTIONS"))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	if conf.Host == "" {

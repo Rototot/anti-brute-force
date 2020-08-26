@@ -62,7 +62,7 @@ func (c *BlackListCrudController) CreateBlacklist(res http.ResponseWriter, req *
 		return
 	}
 
-	httputils.Response(res, nil, http.StatusNoContent)
+	httputils.Response(res, nil, http.StatusCreated)
 }
 
 func (c *BlackListCrudController) DeleteBlacklist(res http.ResponseWriter, req *http.Request) {

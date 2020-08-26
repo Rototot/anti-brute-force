@@ -3,14 +3,6 @@ package postgres
 import (
 	"fmt"
 	"sync"
-
-	"gopkg.in/khaiql/dbcleaner.v2"
-	"gopkg.in/khaiql/dbcleaner.v2/engine"
-)
-
-var (
-	cleanerOne sync.Once
-	cleaner    dbcleaner.DbCleaner
 )
 
 var cleaningTables = []string{
@@ -19,14 +11,19 @@ var cleaningTables = []string{
 }
 
 func Clean() {
-	cleanerOne.Do(func() {
-		conf := NewConfig()
+	var wg sync.WaitGroup
+	conn := Connection()
+	for _, table := range cleaningTables {
+		wg.Add(1)
+		go func(t string) {
+			defer wg.Done()
 
-		cleaner = dbcleaner.New()
+			_, err := conn.Exec(fmt.Sprintf("TRUNCATE TABLE %s CASCADE", t))
+			if err != nil {
+				panic(err)
+			}
+		}(table)
+	}
 
-		eng := engine.NewPostgresEngine(fmt.Sprintf("%s:%d", conf.Host, conf.Port))
-		cleaner.SetEngine(eng)
-	})
-
-	cleaner.Clean(cleaningTables...)
+	wg.Wait()
 }

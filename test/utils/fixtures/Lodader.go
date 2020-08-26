@@ -7,7 +7,7 @@ import (
 
 func Load(paths ...string) {
 	if len(paths) == 0 {
-		paths = append(paths, "test/fixtures")
+		paths = append(paths, "../../fixtures")
 	}
 
 	db := postgres.Connection()

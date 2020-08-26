@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
-	"github.com/Rototot/anti-brute-force/pkg/domain/services"
 	"github.com/Rototot/anti-brute-force/pkg/infrastructure/configurators"
 	"github.com/Rototot/anti-brute-force/pkg/infrastructure/persistence/postgres"
 	"github.com/Rototot/anti-brute-force/pkg/infrastructure/persistence/postgres/repositories"
@@ -10,15 +9,14 @@ import (
 	repositories2 "github.com/Rototot/anti-brute-force/pkg/infrastructure/persistence/redis/repositories"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/cli/commands"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
-func newCLiCmd() *cobra.Command {
+func NewCLiCmd() *cobra.Command {
 	// db
-	pgConnection := postgres.NewConnection(*configurators.NewPostgresConfig(viper.GetViper()))
+	pgConnection := postgres.NewConnection(configurators.NewPostgresConfig())
 
 	// redis
-	redisPool := redis.NewPool(*configurators.NewRedisConfig(viper.GetViper()))
+	redisPool := redis.NewPool(configurators.NewRedisConfig())
 
 	// domain
 	// repositories
@@ -26,9 +24,6 @@ func newCLiCmd() *cobra.Command {
 	ipWhiteListRepository := repositories.NewWhiteListIPRepository(pgConnection)
 
 	bucketRepository := repositories2.NewBucketRepository(redisPool)
-
-	// domain services
-	rateLimiter := services.NewBucketRateLimiter(bucketRepository)
 
 	// application
 	//   cases
@@ -38,7 +33,7 @@ func newCLiCmd() *cobra.Command {
 	caseAddToWhitelist := usecases.NewAddIPToWhiteListHandler(ipWhiteListRepository)
 	caseRemoveFromWhitelist := usecases.NewRemoveIPFromWhiteListHandler(ipWhiteListRepository)
 
-	caseResetAttempts := usecases.NewResetLoginAttemptsHandler(bucketRepository, rateLimiter)
+	caseResetAttempts := usecases.NewResetLoginAttemptsHandler(bucketRepository)
 
 	cliCmd := &cobra.Command{
 		Use:   "cli",

@@ -6,7 +6,7 @@ package mocks
 
 import (
 	entities "github.com/Rototot/anti-brute-force/pkg/domain/entities"
-	valueObjects "github.com/Rototot/anti-brute-force/pkg/domain/valueobjects"
+	valueobjects "github.com/Rototot/anti-brute-force/pkg/domain/valueobjects"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -34,59 +34,44 @@ func (m *MockBucketRepository) EXPECT() *MockBucketRepositoryMockRecorder {
 	return m.recorder
 }
 
-// FindOneByID mocks base method
-func (m *MockBucketRepository) FindOneByID(id valueObjects.BucketID) (*entities.Bucket, error) {
+// AddDrip mocks base method
+func (m *MockBucketRepository) AddDrip(bucket *entities.Bucket) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindOneByID", id)
-	ret0, _ := ret[0].(*entities.Bucket)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindOneByID indicates an expected call of FindOneByID
-func (mr *MockBucketRepositoryMockRecorder) FindOneByID(id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindOneByID", reflect.TypeOf((*MockBucketRepository)(nil).FindOneByID), id)
-}
-
-// Add mocks base method
-func (m *MockBucketRepository) Add(bucket *entities.Bucket) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Add", bucket)
+	ret := m.ctrl.Call(m, "AddDrip", bucket)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Add indicates an expected call of Add
-func (mr *MockBucketRepositoryMockRecorder) Add(bucket interface{}) *gomock.Call {
+// AddDrip indicates an expected call of AddDrip
+func (mr *MockBucketRepositoryMockRecorder) AddDrip(bucket interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockBucketRepository)(nil).Add), bucket)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddDrip", reflect.TypeOf((*MockBucketRepository)(nil).AddDrip), bucket)
 }
 
-// Update mocks base method
-func (m *MockBucketRepository) Update(bucket *entities.Bucket) error {
+// CountDrips mocks base method
+func (m *MockBucketRepository) CountDrips(bucket *entities.Bucket) int {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", bucket)
-	ret0, _ := ret[0].(error)
+	ret := m.ctrl.Call(m, "CountDrips", bucket)
+	ret0, _ := ret[0].(int)
 	return ret0
 }
 
-// Update indicates an expected call of Update
-func (mr *MockBucketRepositoryMockRecorder) Update(bucket interface{}) *gomock.Call {
+// CountDrips indicates an expected call of CountDrips
+func (mr *MockBucketRepositoryMockRecorder) CountDrips(bucket interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockBucketRepository)(nil).Update), bucket)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountDrips", reflect.TypeOf((*MockBucketRepository)(nil).CountDrips), bucket)
 }
 
 // Remove mocks base method
-func (m *MockBucketRepository) Remove(bucket *entities.Bucket) error {
+func (m *MockBucketRepository) Remove(id valueobjects.BucketID) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Remove", bucket)
+	ret := m.ctrl.Call(m, "Remove", id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Remove indicates an expected call of Remove
-func (mr *MockBucketRepositoryMockRecorder) Remove(bucket interface{}) *gomock.Call {
+func (mr *MockBucketRepositoryMockRecorder) Remove(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockBucketRepository)(nil).Remove), bucket)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockBucketRepository)(nil).Remove), id)
 }

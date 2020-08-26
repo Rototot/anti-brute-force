@@ -5,6 +5,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/Rototot/anti-brute-force/pkg/domain/constants"
+
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/httputils"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/queries"
@@ -45,13 +47,19 @@ func (c *RateLimitController) Attempt(res http.ResponseWriter, req *http.Request
 		IP:       net.ParseIP(query.IP),
 	}
 
-	if err := c.attemptHandler.Execute(useCase); err != nil {
-		httputils.Error(res, err, http.StatusInternalServerError)
+	err := c.attemptHandler.Execute(useCase)
+
+	if err == nil {
+		httputils.Response(res, true, http.StatusOK)
+
+		return
+	} else if err == constants.ErrAccessDenied || err == constants.ErrAttemptsIsExceeded {
+		httputils.Response(res, false, http.StatusOK)
 
 		return
 	}
 
-	httputils.Response(res, nil, http.StatusNoContent)
+	httputils.Error(res, err, http.StatusInternalServerError)
 }
 
 func (c *RateLimitController) Reset(res http.ResponseWriter, req *http.Request) {

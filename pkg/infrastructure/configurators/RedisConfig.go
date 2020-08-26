@@ -1,6 +1,9 @@
 package configurators
 
-import "github.com/spf13/viper"
+import (
+	"os"
+	"strconv"
+)
 
 const (
 	defaultRedisPort = 6379
@@ -14,11 +17,23 @@ type RedisConfig struct {
 	DB   int
 }
 
-func NewRedisConfig(v *viper.Viper) *RedisConfig {
-	conf := &RedisConfig{
-		Host: v.GetString("APP_REDIS_HOST"),
-		Port: v.GetInt("APP_REDIS_PORT"),
-		DB:   v.GetInt("APP_REDIS_DB"),
+func NewRedisConfig() RedisConfig {
+	var err error
+	var conf RedisConfig
+
+	conf.Host = os.Getenv("APP_REDIS_HOST")
+	if os.Getenv("APP_REDIS_PORT") == "" {
+		conf.Port, err = strconv.Atoi(os.Getenv("APP_REDIS_PORT"))
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if os.Getenv("APP_REDIS_DB") == "" {
+		conf.DB, err = strconv.Atoi(os.Getenv("APP_REDIS_DB"))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	if conf.Port == 0 {

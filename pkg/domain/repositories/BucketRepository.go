@@ -8,9 +8,7 @@ import (
 //go:generate mockgen -source=$GOFILE -destination=./mocks/MockBucketRepository.go -package=mocks
 
 type BucketRepository interface {
-	FindOneByID(id valueobjects.BucketID) (*entities.Bucket, error)
-
-	Add(bucket *entities.Bucket) error
-	Update(bucket *entities.Bucket) error
-	Remove(bucket *entities.Bucket) error
+	AddDrip(bucket *entities.Bucket) error
+	CountDrips(bucket *entities.Bucket) int
+	Remove(id valueobjects.BucketID) error
 }

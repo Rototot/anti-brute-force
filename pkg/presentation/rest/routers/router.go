@@ -41,7 +41,7 @@ func (r *Router) Create() *mux.Router {
 		Methods("GET")
 	muxRouter.HandleFunc("/whitelist", r.whitelist.CreateWhitelist).
 		Methods("POST")
-	muxRouter.HandleFunc("/whitelist/{id:[0-9\\./]+}", r.whitelist.DeleteWhitelist).
+	muxRouter.HandleFunc("/whitelist", r.whitelist.DeleteWhitelist).
 		Methods("DELETE")
 
 	// blacklist
@@ -49,7 +49,7 @@ func (r *Router) Create() *mux.Router {
 		Methods("GET")
 	muxRouter.HandleFunc("/blacklist", r.blacklist.CreateBlacklist).
 		Methods("POST")
-	muxRouter.HandleFunc("/blacklist/{id:[0-9\\./]+}", r.blacklist.DeleteBlacklist).
+	muxRouter.HandleFunc("/blacklist", r.blacklist.DeleteBlacklist).
 		Methods("DELETE")
 
 	// rate limiter

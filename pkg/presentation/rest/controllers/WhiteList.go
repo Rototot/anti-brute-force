@@ -64,7 +64,7 @@ func (c *WhiteListCrudController) CreateWhitelist(res http.ResponseWriter, req *
 		return
 	}
 
-	httputils.Response(res, nil, http.StatusNoContent)
+	httputils.Response(res, nil, http.StatusCreated)
 }
 
 func (c *WhiteListCrudController) DeleteWhitelist(res http.ResponseWriter, req *http.Request) {

@@ -13,7 +13,7 @@ type grabber struct {
 }
 
 func (g *grabber) grabBodyAndValidate(res http.ResponseWriter, req *http.Request, targetDto interface{}) error {
-	if err := json.NewDecoder(req.Body).Decode(&targetDto); err != nil {
+	if err := json.NewDecoder(req.Body).Decode(targetDto); err != nil {
 		httputils.Error(res, httputils.ErrJSONFormat, http.StatusBadRequest)
 
 		return err

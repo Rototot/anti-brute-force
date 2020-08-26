@@ -17,7 +17,6 @@ import (
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/routers"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
@@ -25,7 +24,7 @@ const (
 	defaultServerPort = 80
 )
 
-func newServerCmd() *cobra.Command {
+func NewServerCmd() *cobra.Command {
 	serverCmd := &cobra.Command{
 		Use:   "server",
 		Short: "Start web API server",
@@ -48,10 +47,10 @@ func newServerCmd() *cobra.Command {
 //nolint:funlen
 func runHTTPServer(port int) error {
 	// db
-	pgConnection := postgres.NewConnection(*configurators.NewPostgresConfig(viper.GetViper()))
+	pgConnection := postgres.NewConnection(configurators.NewPostgresConfig())
 
 	// redis
-	redisPool := redis.NewPool(*configurators.NewRedisConfig(viper.GetViper()))
+	redisPool := redis.NewPool(configurators.NewRedisConfig())
 
 	// domain
 	// repositories
@@ -61,7 +60,7 @@ func runHTTPServer(port int) error {
 	bucketRepository := repositories2.NewBucketRepository(redisPool)
 
 	// domain services
-	bucketFactory := factories.NewBucketFactory(configurators.NewBucketConfigurator(viper.GetViper()))
+	bucketFactory := factories.NewBucketFactory(configurators.NewBucketConfigurator())
 	ipGuard := services.NewIPGuard(ipWhiteListRepository, ipBlackListRepository)
 	rateLimiter := services.NewBucketRateLimiter(bucketRepository)
 
@@ -75,7 +74,7 @@ func runHTTPServer(port int) error {
 
 	caseCheckAttempt := usecases.NewCheckLoginAttemptHandler(bucketRepository, bucketFactory, ipGuard, rateLimiter)
 
-	caseResetAttempts := usecases.NewResetLoginAttemptsHandler(bucketRepository, rateLimiter)
+	caseResetAttempts := usecases.NewResetLoginAttemptsHandler(bucketRepository)
 
 	// controllers
 	blackListController := controllers.NewBlackListCrudController(
@@ -105,7 +104,7 @@ func runHTTPServer(port int) error {
 	//
 	server := &http.Server{
 		Handler: router,
-		Addr:    ":8000",
+		Addr:    fmt.Sprintf("%s:%d", "", port),
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

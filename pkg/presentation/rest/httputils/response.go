@@ -20,7 +20,7 @@ type errorData struct {
 }
 
 type payloadData struct {
-	Data interface{}
+	Data interface{} `json:"data"`
 }
 
 func Error(w http.ResponseWriter, err error, code int) {

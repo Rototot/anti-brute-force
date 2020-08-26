@@ -8,7 +8,7 @@ import (
 )
 
 func NewConnection(conf configurators.PostgresConfig) *sql.DB {
-	dsn := fmt.Sprintf("%s:%d", conf.Host, conf.Port)
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", conf.User, conf.Password, conf.Host, conf.Port, conf.Dbname)
 	db, err := sql.Open("pgx", dsn)
 	// todo add repeater
 	if err != nil {

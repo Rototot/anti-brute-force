@@ -23,8 +23,6 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	viper.AutomaticEnv() // read in environment variables that match
-
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
@@ -38,8 +36,8 @@ func newRootCmd() *cobra.Command {
 	}
 
 	rootCmd.AddCommand(
-		newServerCmd(),
-		newCLiCmd(),
+		NewServerCmd(),
+		NewCLiCmd(),
 	)
 
 	return rootCmd

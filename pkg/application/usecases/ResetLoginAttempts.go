@@ -4,10 +4,11 @@ package usecases
 
 import (
 	"net"
+	"sync"
 
-	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
-	"github.com/Rototot/anti-brute-force/pkg/domain/repositories"
 	"github.com/Rototot/anti-brute-force/pkg/domain/valueobjects"
+
+	"github.com/Rototot/anti-brute-force/pkg/domain/repositories"
 )
 
 type ResetLoginAttempts struct {
@@ -15,36 +16,34 @@ type ResetLoginAttempts struct {
 	IP    net.IP
 }
 
-type bucketCleaner interface {
-	Clean(bucket *entities.Bucket) error
-}
-
 type ResetLoginAttemptsHandler struct {
 	bucketRepository repositories.BucketRepository
-	bucketCleaner    bucketCleaner
 }
 
-func NewResetLoginAttemptsHandler(bucketRepository repositories.BucketRepository, bucketCleaner bucketCleaner) *ResetLoginAttemptsHandler {
-	return &ResetLoginAttemptsHandler{bucketRepository: bucketRepository, bucketCleaner: bucketCleaner}
+func NewResetLoginAttemptsHandler(bucketRepository repositories.BucketRepository) *ResetLoginAttemptsHandler {
+	return &ResetLoginAttemptsHandler{bucketRepository: bucketRepository}
 }
 
 func (h *ResetLoginAttemptsHandler) Execute(useCase ResetLoginAttempts) error {
-	bucketSearchers := []func() (*entities.Bucket, error){
-		func() (*entities.Bucket, error) {
-			return h.bucketRepository.FindOneByID(valueobjects.BucketID(useCase.IP.String()))
-		},
-		func() (*entities.Bucket, error) {
-			return h.bucketRepository.FindOneByID(valueobjects.BucketID(useCase.Login))
-		},
-	}
+	var wg sync.WaitGroup
+	errs := make(chan error, 2)
 
-	for _, searcher := range bucketSearchers {
-		bucket, err := searcher()
-		if err != nil {
-			return err
-		}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		errs <- h.bucketRepository.Remove(valueobjects.BucketID(useCase.IP))
+	}()
 
-		err = h.bucketCleaner.Clean(bucket)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		errs <- h.bucketRepository.Remove(valueobjects.BucketID(useCase.Login))
+	}()
+
+	wg.Wait()
+
+	close(errs)
+	for err := range errs {
 		if err != nil {
 			return err
 		}

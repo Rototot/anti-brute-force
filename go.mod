@@ -13,14 +13,18 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jackc/pgx/v4 v4.6.0
 	github.com/khaiql/dbcleaner v2.3.0+incompatible // indirect
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.1 // indirect
 	github.com/pkg/errors v0.9.1
+	github.com/prometheus/common v0.4.0
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
+	github.com/steinfletcher/apitest v1.4.9
 	github.com/stretchr/testify v1.6.1
 	go.uber.org/zap v1.13.0
 	gopkg.in/khaiql/dbcleaner.v2 v2.3.0
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )

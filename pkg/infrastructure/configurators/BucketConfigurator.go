@@ -1,6 +1,9 @@
 package configurators
 
-import "github.com/spf13/viper"
+import (
+	"os"
+	"strconv"
+)
 
 const (
 	defaultBucketIPCap       = 1000
@@ -14,11 +17,36 @@ type BucketConfigurator struct {
 	passwordCapacity int
 }
 
-func NewBucketConfigurator(v *viper.Viper) *BucketConfigurator {
-	conf := &BucketConfigurator{
-		ipCapacity:       v.GetInt("APP_BUCKET_IP_CAP"),
-		loginCapacity:    v.GetInt("APP_BUCKET_LOGIN_CAP"),
-		passwordCapacity: v.GetInt("APP_BUCKET_PASSWORD_CAP"),
+func NewBucketConfigurator() BucketConfigurator {
+	var err error
+	var conf BucketConfigurator
+
+	if os.Getenv("APP_BUCKET_IP_CAP") != "" {
+		conf.ipCapacity, err = strconv.Atoi(os.Getenv("APP_BUCKET_IP_CAP"))
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if os.Getenv("APP_BUCKET_LOGIN_CAP") != "" {
+		conf.loginCapacity, err = strconv.Atoi(os.Getenv("APP_BUCKET_LOGIN_CAP"))
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if os.Getenv("APP_BUCKET_PASSWORD_CAP") != "" {
+		conf.passwordCapacity, err = strconv.Atoi(os.Getenv("APP_BUCKET_PASSWORD_CAP"))
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	if os.Getenv("APP_BUCKET_IP_CAP") != "" {
+		conf.ipCapacity, err = strconv.Atoi(os.Getenv("APP_BUCKET_IP_CAP"))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	if conf.ipCapacity == 0 {
@@ -36,14 +64,14 @@ func NewBucketConfigurator(v *viper.Viper) *BucketConfigurator {
 	return conf
 }
 
-func (f *BucketConfigurator) IPBucketCapacity() int {
+func (f BucketConfigurator) IPBucketCapacity() int {
 	return f.ipCapacity
 }
 
-func (f *BucketConfigurator) LoginBucketCapacity() int {
+func (f BucketConfigurator) LoginBucketCapacity() int {
 	return f.loginCapacity
 }
 
-func (f *BucketConfigurator) PasswordBucketCapacity() int {
+func (f BucketConfigurator) PasswordBucketCapacity() int {
 	return f.passwordCapacity
 }
