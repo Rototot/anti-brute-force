@@ -2,13 +2,16 @@ package postgres
 
 import (
 	"fmt"
+	"sync"
+
 	"gopkg.in/khaiql/dbcleaner.v2"
 	"gopkg.in/khaiql/dbcleaner.v2/engine"
-	"sync"
 )
 
-var cleanerOne sync.Once
-var cleaner dbcleaner.DbCleaner
+var (
+	cleanerOne sync.Once
+	cleaner    dbcleaner.DbCleaner
+)
 
 var cleaningTables = []string{
 	"public.whitelists",
@@ -16,7 +19,6 @@ var cleaningTables = []string{
 }
 
 func Clean() {
-
 	cleanerOne.Do(func() {
 		conf := NewConfig()
 

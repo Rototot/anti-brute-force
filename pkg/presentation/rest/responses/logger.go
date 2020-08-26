@@ -1,5 +1,0 @@
-package responses
-
-func logHttpError() {
-
-}

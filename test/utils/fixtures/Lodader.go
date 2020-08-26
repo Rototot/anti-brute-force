@@ -17,7 +17,6 @@ func Load(paths ...string) {
 		testfixtures.Dialect("postgres"),
 		testfixtures.Paths(paths...),
 	)
-
 	if err != nil {
 		panic(err)
 	}

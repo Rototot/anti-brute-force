@@ -6,7 +6,7 @@ package mocks
 
 import (
 	entities "github.com/Rototot/anti-brute-force/pkg/domain/entities"
-	valueObjects "github.com/Rototot/anti-brute-force/pkg/domain/valueObjects"
+	valueObjects "github.com/Rototot/anti-brute-force/pkg/domain/valueobjects"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )

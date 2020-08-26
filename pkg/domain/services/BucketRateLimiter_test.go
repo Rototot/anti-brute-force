@@ -2,14 +2,16 @@ package services
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/Rototot/anti-brute-force/pkg/domain/constants"
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"github.com/Rototot/anti-brute-force/pkg/domain/repositories/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
+//nolint:funlen
 func TestBucketRateLimiter_IsLimitExceeded(t *testing.T) {
 	t.Run("when is ok", func(t *testing.T) {
 		bucket := &entities.Bucket{
@@ -88,6 +90,7 @@ func TestBucketRateLimiter_IsLimitExceeded(t *testing.T) {
 	})
 }
 
+//nolint:funlen
 func TestBucketRateLimiter_Clean(t *testing.T) {
 	t.Run("when is ok", func(t *testing.T) {
 		bucket := &entities.Bucket{

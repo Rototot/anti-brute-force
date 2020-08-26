@@ -5,7 +5,6 @@ package constants
 
 import (
 	"fmt"
-	"strings"
 )
 
 const (
@@ -18,19 +17,6 @@ const (
 )
 
 const _BucketTypeName = "LoginIpPassword"
-
-var _BucketTypeNames = []string{
-	_BucketTypeName[0:5],
-	_BucketTypeName[5:7],
-	_BucketTypeName[7:15],
-}
-
-// BucketTypeNames returns a list of possible string values of BucketType.
-func BucketTypeNames() []string {
-	tmp := make([]string, len(_BucketTypeNames))
-	copy(tmp, _BucketTypeNames)
-	return tmp
-}
 
 var _BucketTypeMap = map[BucketType]string{
 	0: _BucketTypeName[0:5],
@@ -57,5 +43,5 @@ func ParseBucketType(name string) (BucketType, error) {
 	if x, ok := _BucketTypeValue[name]; ok {
 		return x, nil
 	}
-	return BucketType(0), fmt.Errorf("%s is not a valid BucketType, try [%s]", name, strings.Join(_BucketTypeNames, ", "))
+	return BucketType(0), fmt.Errorf("%s is not a valid BucketType", name)
 }

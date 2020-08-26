@@ -9,17 +9,15 @@ import (
 	"github.com/Rototot/anti-brute-force/pkg/infrastructure/persistence/redis"
 	repositories2 "github.com/Rototot/anti-brute-force/pkg/infrastructure/persistence/redis/repositories"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/cli/commands"
-	"github.com/spf13/viper"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newCLiCmd() *cobra.Command {
-
-	//db
+	// db
 	pgConnection := postgres.NewConnection(*configurators.NewPostgresConfig(viper.GetViper()))
 
-	//redis
+	// redis
 	redisPool := redis.NewPool(*configurators.NewRedisConfig(viper.GetViper()))
 
 	// domain
@@ -34,15 +32,15 @@ func newCLiCmd() *cobra.Command {
 
 	// application
 	//   cases
-	caseAddToBlacklist := usecases.NewAddIpToBlacklistHandler(ipBlackListRepository)
-	caseRemoveFromBlacklist := usecases.NewRemoveIpFromBlackListHandler(ipBlackListRepository)
+	caseAddToBlacklist := usecases.NewAddIPToBlacklistHandler(ipBlackListRepository)
+	caseRemoveFromBlacklist := usecases.NewRemoveIPFromBlackListHandler(ipBlackListRepository)
 
 	caseAddToWhitelist := usecases.NewAddIPToWhiteListHandler(ipWhiteListRepository)
-	caseRemoveFromWhitelist := usecases.NewRemoveIpFromWhiteListHandler(ipWhiteListRepository)
+	caseRemoveFromWhitelist := usecases.NewRemoveIPFromWhiteListHandler(ipWhiteListRepository)
 
 	caseResetAttempts := usecases.NewResetLoginAttemptsHandler(bucketRepository, rateLimiter)
 
-	var cliCmd = &cobra.Command{
+	cliCmd := &cobra.Command{
 		Use:   "cli",
 		Short: "cli app control",
 		Long:  "Choose command for continue",

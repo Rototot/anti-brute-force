@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/httputils"
 	"github.com/pkg/errors"
-	"net/http"
 )
 
 type grabber struct {
@@ -13,7 +14,7 @@ type grabber struct {
 
 func (g *grabber) grabBodyAndValidate(res http.ResponseWriter, req *http.Request, targetDto interface{}) error {
 	if err := json.NewDecoder(req.Body).Decode(&targetDto); err != nil {
-		httputils.Error(res, httputils.ErrJsonFormat, http.StatusBadRequest)
+		httputils.Error(res, httputils.ErrJSONFormat, http.StatusBadRequest)
 
 		return err
 	}

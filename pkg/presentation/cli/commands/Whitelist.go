@@ -2,17 +2,18 @@ package commands
 
 import (
 	"fmt"
+	"net"
+
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/controllers"
 	"github.com/spf13/cobra"
-	"net"
 )
 
 func NewWhitelist(
 	createHandler controllers.CreateWhiteListHandler,
 	removeHandler controllers.RemoveWhiteListHandler,
 ) *cobra.Command {
-	var whitelistCmd = &cobra.Command{
+	whitelistCmd := &cobra.Command{
 		Use:   "whitelist",
 		Short: "Whitelist control",
 		Run: func(cmd *cobra.Command, args []string) {
@@ -29,7 +30,7 @@ func NewWhitelist(
 }
 
 func newWhitelistAdd(createHandler controllers.CreateWhiteListHandler) *cobra.Command {
-	var addCmd = &cobra.Command{
+	addCmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add IP network to whitelist",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -56,7 +57,7 @@ func newWhitelistAdd(createHandler controllers.CreateWhiteListHandler) *cobra.Co
 }
 
 func newWhitelistRemove(removeHandler controllers.RemoveWhiteListHandler) *cobra.Command {
-	var removeCmd = &cobra.Command{
+	removeCmd := &cobra.Command{
 		Use:   "remove",
 		Short: "Remove IP network from whitelist",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -65,7 +66,7 @@ func newWhitelistRemove(removeHandler controllers.RemoveWhiteListHandler) *cobra
 				return err
 			}
 
-			if err := removeHandler.Execute(usecases.RemoveIpFromWhiteList{Subnet: subnet}); err != nil {
+			if err := removeHandler.Execute(usecases.RemoveIPFromWhiteList{Subnet: subnet}); err != nil {
 				return err
 			}
 

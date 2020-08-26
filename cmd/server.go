@@ -2,6 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
 	"github.com/Rototot/anti-brute-force/pkg/domain/factories"
 	"github.com/Rototot/anti-brute-force/pkg/domain/services"
@@ -13,12 +16,9 @@ import (
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/controllers"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/routers"
 	"github.com/go-playground/validator/v10"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
-	"net/http"
-	"time"
-
-	"github.com/spf13/cobra"
 )
 
 const (
@@ -26,7 +26,7 @@ const (
 )
 
 func newServerCmd() *cobra.Command {
-	var serverCmd = &cobra.Command{
+	serverCmd := &cobra.Command{
 		Use:   "server",
 		Short: "Start web API server",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -35,7 +35,7 @@ func newServerCmd() *cobra.Command {
 				return err
 			}
 
-			return runHttpServer(port)
+			return runHTTPServer(port)
 		},
 	}
 
@@ -44,11 +44,13 @@ func newServerCmd() *cobra.Command {
 	return serverCmd
 }
 
-func runHttpServer(port int) error {
-	//db
+// todo use wire
+//nolint:funlen
+func runHTTPServer(port int) error {
+	// db
 	pgConnection := postgres.NewConnection(*configurators.NewPostgresConfig(viper.GetViper()))
 
-	//redis
+	// redis
 	redisPool := redis.NewPool(*configurators.NewRedisConfig(viper.GetViper()))
 
 	// domain
@@ -65,11 +67,11 @@ func runHttpServer(port int) error {
 
 	// application
 	//   cases
-	caseAddToBlacklist := usecases.NewAddIpToBlacklistHandler(ipBlackListRepository)
-	caseRemoveFromBlacklist := usecases.NewRemoveIpFromBlackListHandler(ipBlackListRepository)
+	caseAddToBlacklist := usecases.NewAddIPToBlacklistHandler(ipBlackListRepository)
+	caseRemoveFromBlacklist := usecases.NewRemoveIPFromBlackListHandler(ipBlackListRepository)
 
 	caseAddToWhitelist := usecases.NewAddIPToWhiteListHandler(ipWhiteListRepository)
-	caseRemoveFromWhitelist := usecases.NewRemoveIpFromWhiteListHandler(ipWhiteListRepository)
+	caseRemoveFromWhitelist := usecases.NewRemoveIPFromWhiteListHandler(ipWhiteListRepository)
 
 	caseCheckAttempt := usecases.NewCheckLoginAttemptHandler(bucketRepository, bucketFactory, ipGuard, rateLimiter)
 
@@ -108,7 +110,7 @@ func runHttpServer(port int) error {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	var listenAddress = fmt.Sprintf(":%d", port)
+	listenAddress := fmt.Sprintf(":%d", port)
 
 	zap.S().Infof("\nStart listen addr %s\n", listenAddress)
 

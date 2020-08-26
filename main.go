@@ -17,9 +17,9 @@ package main
 
 import (
 	"github.com/Rototot/anti-brute-force/cmd"
+	_ "github.com/jackc/pgx/stdlib"
 )
 
 func main() {
-
 	cmd.Execute()
 }

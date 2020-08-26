@@ -38,7 +38,7 @@ func (m *MockbucketFactory) EXPECT() *MockbucketFactoryMockRecorder {
 // Create mocks base method
 func (m *MockbucketFactory) Create(bType constants.BucketType) (*entities.Bucket, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", bType)
+	ret := m.ctrl.Call(m, "CreateWhitelist", bType)
 	ret0, _ := ret[0].(*entities.Bucket)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -47,7 +47,7 @@ func (m *MockbucketFactory) Create(bType constants.BucketType) (*entities.Bucket
 // Create indicates an expected call of Create
 func (mr *MockbucketFactoryMockRecorder) Create(bType interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockbucketFactory)(nil).Create), bType)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateWhitelist", reflect.TypeOf((*MockbucketFactory)(nil).Create), bType)
 }
 
 // MockipGuard is a mock of ipGuard interface

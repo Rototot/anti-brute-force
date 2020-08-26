@@ -1,15 +1,17 @@
 package configurators
 
 import (
-	"github.com/spf13/viper"
 	"sync"
+
+	"github.com/spf13/viper"
 )
 
-var testViperOne sync.Once
-var testViper *viper.Viper
+var (
+	testViperOne sync.Once
+	testViper    *viper.Viper
+)
 
 func NewViper() *viper.Viper {
-
 	testViperOne.Do(func() {
 		testViper = viper.New()
 		viper.AutomaticEnv()

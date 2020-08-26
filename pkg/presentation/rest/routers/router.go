@@ -1,14 +1,21 @@
 package routers
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-type ipCrudService interface {
-	Index(res http.ResponseWriter, req *http.Request)
-	Create(res http.ResponseWriter, req *http.Request)
-	Delete(res http.ResponseWriter, req *http.Request)
+type whitelistCrudService interface {
+	ListWhitelists(res http.ResponseWriter, req *http.Request)
+	CreateWhitelist(res http.ResponseWriter, req *http.Request)
+	DeleteWhitelist(res http.ResponseWriter, req *http.Request)
+}
+
+type blacklistCrudService interface {
+	ListBlacklists(res http.ResponseWriter, req *http.Request)
+	CreateBlacklist(res http.ResponseWriter, req *http.Request)
+	DeleteBlacklist(res http.ResponseWriter, req *http.Request)
 }
 
 type rateLimiterService interface {
@@ -17,31 +24,32 @@ type rateLimiterService interface {
 }
 
 type Router struct {
-	whitelist   ipCrudService
-	blacklist   ipCrudService
+	whitelist   whitelistCrudService
+	blacklist   blacklistCrudService
 	rateLimiter rateLimiterService
 }
 
-func NewRouter(whitelist ipCrudService, blacklist ipCrudService, rateLimiter rateLimiterService) *Router {
+func NewRouter(whitelist whitelistCrudService, blacklist blacklistCrudService, rateLimiter rateLimiterService) *Router {
 	return &Router{whitelist: whitelist, blacklist: blacklist, rateLimiter: rateLimiter}
 }
+
 func (r *Router) Create() *mux.Router {
 	muxRouter := mux.NewRouter()
 
 	// whitelist
-	muxRouter.HandleFunc("/whitelists", r.whitelist.Index).
+	muxRouter.HandleFunc("/whitelists", r.whitelist.ListWhitelists).
 		Methods("GET")
-	muxRouter.HandleFunc("/whitelist", r.whitelist.Create).
+	muxRouter.HandleFunc("/whitelist", r.whitelist.CreateWhitelist).
 		Methods("POST")
-	muxRouter.HandleFunc("/whitelist/{id:[0-9\\./]+}", r.whitelist.Delete).
+	muxRouter.HandleFunc("/whitelist/{id:[0-9\\./]+}", r.whitelist.DeleteWhitelist).
 		Methods("DELETE")
 
 	// blacklist
-	muxRouter.HandleFunc("/blacklists", r.blacklist.Index).
+	muxRouter.HandleFunc("/blacklists", r.blacklist.ListBlacklists).
 		Methods("GET")
-	muxRouter.HandleFunc("/blacklist", r.blacklist.Create).
+	muxRouter.HandleFunc("/blacklist", r.blacklist.CreateBlacklist).
 		Methods("POST")
-	muxRouter.HandleFunc("/blacklist/{id:[0-9\\./]+}", r.blacklist.Delete).
+	muxRouter.HandleFunc("/blacklist/{id:[0-9\\./]+}", r.blacklist.DeleteBlacklist).
 		Methods("DELETE")
 
 	// rate limiter

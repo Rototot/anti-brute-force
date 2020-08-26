@@ -1,9 +1,9 @@
 package entities
 
-import "github.com/Rototot/anti-brute-force/pkg/domain/valueObjects"
+import "github.com/Rototot/anti-brute-force/pkg/domain/valueobjects"
 
 type Bucket struct {
-	ID valueObjects.BucketID
+	ID valueobjects.BucketID
 
 	Capacity int
 

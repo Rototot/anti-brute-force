@@ -1,17 +1,18 @@
 package commands
 
 import (
+	"net"
+
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/controllers"
 	"github.com/spf13/cobra"
-	"net"
 )
 
 func NewBlackList(
 	createHandler controllers.CreateBlackListHandler,
 	removeHandler controllers.RemoveBlackListHandler,
 ) *cobra.Command {
-	var blacklistCmd = &cobra.Command{
+	blacklistCmd := &cobra.Command{
 		Use:   "blacklist",
 		Short: "Blacklist control",
 	}
@@ -27,7 +28,7 @@ func NewBlackList(
 func newBlackListAdd(
 	createHandler controllers.CreateBlackListHandler,
 ) *cobra.Command {
-	var addCmd = &cobra.Command{
+	addCmd := &cobra.Command{
 		Use:     "add",
 		Short:   "Add IP network to blacklist",
 		Example: `blacklist add "192.168.1/8"`,
@@ -37,7 +38,7 @@ func newBlackListAdd(
 				return err
 			}
 
-			if err := createHandler.Execute(usecases.AddIpToBlacklist{Subnet: subnet}); err != nil {
+			if err := createHandler.Execute(usecases.AddIPToBlacklist{Subnet: subnet}); err != nil {
 				return err
 			}
 
@@ -58,7 +59,7 @@ func newBlackListRemove(
 	removeHandler controllers.RemoveBlackListHandler,
 ) *cobra.Command {
 	// cliBlacklistRemoveCmd represents the cliBlacklistRemove command
-	var removeCmd = &cobra.Command{
+	removeCmd := &cobra.Command{
 		Use:     "remove",
 		Short:   "Remove IP network from blacklist",
 		Example: `blacklist remove "192.168.1/8"`,
@@ -68,7 +69,7 @@ func newBlackListRemove(
 				return err
 			}
 
-			if err := removeHandler.Execute(usecases.RemoveIpFromBlackList{Subnet: subnet}); err != nil {
+			if err := removeHandler.Execute(usecases.RemoveIPFromBlackList{Subnet: subnet}); err != nil {
 				return err
 			}
 

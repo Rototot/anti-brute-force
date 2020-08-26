@@ -1,8 +1,9 @@
 package services
 
 import (
-	"github.com/Rototot/anti-brute-force/pkg/domain/repositories"
 	"net"
+
+	"github.com/Rototot/anti-brute-force/pkg/domain/repositories"
 )
 
 type IPGuard struct {
@@ -49,6 +50,7 @@ func (g *IPGuard) isAllowed(ip net.IP) (bool, error) {
 	for _, list := range lists {
 		if list.Subnet.Contains(ip) {
 			isAllowed = true
+
 			break
 		}
 	}
@@ -66,6 +68,7 @@ func (g *IPGuard) isForbidden(ip net.IP) (bool, error) {
 	for _, list := range lists {
 		if list.Subnet.Contains(ip) {
 			IsForbidden = true
+
 			break
 		}
 	}
