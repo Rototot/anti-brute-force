@@ -2,29 +2,104 @@ name: Build
 
 on:
   - push
-  - pull_request
 
 jobs:
 
   build:
-    name: Build
+    name: build
     runs-on: ubuntu-latest
+    container: golang:1.14
     steps:
+      - name: clone code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.14
-      id: go
+      - name: install dependencies
+        run: go mod download
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      - name: compile Build
+        run: make ci-build
 
-    - name: Get dependencies
-      run: make install
+  test-units:
+    name: test units
+    runs-on: ubuntu-latest
+    container: golang:1.14
+    steps:
+      - name: clone code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Build
-      run: make build
+      - name: install dependencies
+        run: go mod download
 
-    - name: Test
-      run: make tests-unit
+      - name: test units
+        run: make test-units
+
+# todo fix migrations
+#  test-e2e:
+#    name: test e2e
+#    runs-on: ubuntu-latest
+#    container: golang:1.14
+#    needs: [ build, test-units, linter ]
+#    services:
+#      postges:
+#        image: postgres:11
+#        env:
+#          POSTGRES_DB: app
+#          POSTGRES_USER: ${{ secrets.APP_POSTGRES_USER }}
+#          POSTGRES_PASSWORD: ${{ secrets.APP_POSTGRES_PASSWORD }}
+#        ports:
+#          - 5432:5432
+#
+#      redis:
+#        image: redis:6
+#        ports:
+#          - 6379:6379
+#    env:
+#      APP_POSTGRES_HOST: postgres
+#      APP_POSTGRES_DB: app
+#      APP_POSTGRES_USER: ${{ secrets.APP_POSTGRES_USER }}
+#      APP_POSTGRES_PASSWORD: ${{ secrets.APP_POSTGRES_PASSWORD }}
+#      APP_POSTGRES_PORT: 5432
+#      APP_REDIS_DB: 0
+#      APP_REDIS_PORT: 6379
+#
+#    steps:
+#      - name: clone code into the Go module directory
+#        uses: actions/checkout@v2
+#
+#      - name: install dependencies
+#        run: go mod download
+#
+#      - name: apply migrations
+#        env:
+#          APP_POSTGRES_HOST: postgres
+#          APP_POSTGRES_DB: app
+#          APP_POSTGRES_USER: ${{ secrets.APP_POSTGRES_USER }}
+#          APP_POSTGRES_PASSWORD: ${{ secrets.APP_POSTGRES_PASSWORD }}
+#          APP_POSTGRES_PORT: 5432
+#        run: |
+#          go get -tags 'postgres' -u github.com/golang-migrate/migrate/cmd/migrate
+#          ./docker/migrate/entrypoint.sh
+#
+#      - name: test e2e
+#        run: make test-e2e
+
+  linter:
+    name: lint
+    runs-on: ubuntu-latest
+    container: golang:1.14
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v1
+        with:
+          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
+          version: v1.30
+
+          # Optional: working directory, useful for monorepos
+          # working-directory: somedir
+
+          # Optional: golangci-lint command line arguments.
+          # args: --issues-exit-code=0
+
+          # Optional: show only new issues if it's a pull request. The default value is `false`.
+          # only-new-issues: true

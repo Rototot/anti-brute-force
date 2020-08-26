@@ -1,29 +1,56 @@
 help:
 	@echo "Commands:"
-	@echo "make init-dev - init dev env"
-	@echo "make init-prod - init prod env"
+	@echo "make build - build app in docker"
 	@echo "make run - run app"
-	@echo "make install - install deps"
-	@echo "make build - compile apps"
-	@echo "make tests-unit - run unit tests"
-	@echo "make tests-e2e - run e2e tests"
+	@echo "make test - run all tests"
 
-run: build
-	./build/web
 
-build: install
-	rm -r -f bin/*
-	go build -i -o build/web ./cmd/web
+build:
+	docker-compose build
 
-install:
-	go mod download
+run: build migrate-up
+	docker-compose up -d
 
-tests-unit: install
+test: migrate-up-test test-units test-e2e
+	docker-compose run -f docker-compose.test.yaml --env-file .env.test --entrypoin "" app make test-units
+	docker-compose run -f docker-compose.test.yaml --env-file .env.test --entrypoin "" app make test-e2e
+
+test-units:
 	go test -race -count 100 ./... -v
 
-tests-e2e: install
+test-e2e:
 	go test -tags e2e ./... -v -count=1 -parallel=1
 
+
+migrate-create:
+	docker-compose run --no-deps migrate create -ext sql migration
+
+migrate-up:
+	docker-compose run --no-deps migrate up
+
+migrate-up-test:
+	docker-compose -f docker-compose.test.yaml  --env-file .env.test run --no-deps migrate up
+
+lint:
+	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color always run -v
+
+lint-fix:
+	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color alwaay run -v --fix ./..
+
+ci-build:
+	go generate
+	rm -r -f bin/*
+	go build -i -o bin/app .
+
+dev-run: dev-build
+	./bin/app
+
+dev-build: init-dev
+	rm -r -f bin/*
+	go build -i -o bin/app .
+
+#dev-install:
+	#go mod download
 
 init-dev: clear-init
 	cp .env.dist .env

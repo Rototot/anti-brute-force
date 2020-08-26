@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  app:
+    image: golang:1.14
+    env_file:
+      - .env.test
+    depends_on:
+      - migrate
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:11
+    environment:
+      POSTGRES_DB: ${APP_POSTGRES_DB}
+      POSTGRES_USER: ${APP_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${APP_POSTGRES_PASSWORD}
+
+  redis:
+    image: redis:6
+    ports:
+      - 6379:6379
+
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/migrate/Dockerfile
+    env_file:
+      - .env.test
+    volumes:
+      - ./db/migrations:/app/migrations
+      - ./docker/migrate:/opt/migrate
+    depends_on:
+      - postgres
+    command:
+      - create
