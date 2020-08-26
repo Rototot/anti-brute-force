@@ -1,12 +1,13 @@
 package factories
 
 import (
+	"testing"
+
 	"github.com/Rototot/anti-brute-force/pkg/domain/constants"
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"github.com/Rototot/anti-brute-force/pkg/domain/factories/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestBucketFactory_Create(t *testing.T) {

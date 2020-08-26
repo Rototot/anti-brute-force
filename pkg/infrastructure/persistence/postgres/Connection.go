@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/Rototot/anti-brute-force/pkg/infrastructure/configurators"
 )
 
