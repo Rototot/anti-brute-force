@@ -7,7 +7,7 @@ const (
 	defaultPostgresHost           = "postgres"
 	defaultPostgresUser           = "app"
 	defaultPostgresPassword       = "app_pass"
-	defaultPostgresDb             = "app"
+	defaultPostgresDB             = "app"
 	defaultPostgresMaxConnections = 20
 )
 
@@ -40,7 +40,7 @@ func NewPostgresConfig(v *viper.Viper) *PostgresConfig {
 		conf.Password = defaultPostgresPassword
 	}
 	if conf.Dbname == "" {
-		conf.Dbname = defaultPostgresDb
+		conf.Dbname = defaultPostgresDB
 	}
 	if conf.Port == 0 {
 		conf.Port = defaultPostgresPort

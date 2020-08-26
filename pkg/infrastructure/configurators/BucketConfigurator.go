@@ -3,7 +3,7 @@ package configurators
 import "github.com/spf13/viper"
 
 const (
-	defaultBucketIpCap       = 1000
+	defaultBucketIPCap       = 1000
 	defaultBucketPasswordCap = 100
 	defaultBucketLoginCap    = 10
 )
@@ -22,7 +22,7 @@ func NewBucketConfigurator(v *viper.Viper) *BucketConfigurator {
 	}
 
 	if conf.ipCapacity == 0 {
-		conf.ipCapacity = defaultBucketIpCap
+		conf.ipCapacity = defaultBucketIPCap
 	}
 
 	if conf.loginCapacity == 0 {
@@ -36,7 +36,7 @@ func NewBucketConfigurator(v *viper.Viper) *BucketConfigurator {
 	return conf
 }
 
-func (f *BucketConfigurator) IpBucketCapacity() int {
+func (f *BucketConfigurator) IPBucketCapacity() int {
 	return f.ipCapacity
 }
 

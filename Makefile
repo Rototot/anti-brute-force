@@ -21,12 +21,19 @@ migrate-create:
 migrate-up:
 	docker-compose run --no-deps migrate up
 
+
+lint:
+	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color always run -v
+
+lint-fix:
+	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color alwaay run -v --fix ./..
+
 dev-run: dev-build
-	./build/app
+	./bin/app
 
 dev-build: init-dev
-	rm -r -f build/*
-	go build -i -o build/app .
+	rm -r -f bin/*
+	go build -i -o bin/app .
 
 #dev-install:
 	#go mod download

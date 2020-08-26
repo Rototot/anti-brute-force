@@ -2,34 +2,39 @@ package httputils
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
 )
 
-var ErrJsonFormat = errors.New("invalid json format")
-var ErrInvalidRequest = errors.New(http.StatusText(http.StatusBadRequest))
-var ErrValidation = errors.Wrap(ErrInvalidRequest, "validation error")
+var (
+	ErrJSONFormat     = errors.New("invalid json format")
+	ErrInvalidRequest = errors.New(http.StatusText(http.StatusBadRequest))
+	ErrValidation     = errors.Wrap(ErrInvalidRequest, "validation error")
+)
 
 type errorData struct {
-	errors string
-	status int
+	Errors string
+	Status int
 }
 
 type payloadData struct {
-	data   interface{}
-	status int
+	Data interface{}
 }
 
 func Error(w http.ResponseWriter, err error, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
-	var data = errorData{
-		errors: err.Error(),
-		status: code,
+	data := errorData{
+		Errors: err.Error(),
+		Status: code,
 	}
 
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		zap.S().Warn(err)
+	}
 }
 
 func Response(w http.ResponseWriter, payload interface{}, code int) {
@@ -40,9 +45,11 @@ func Response(w http.ResponseWriter, payload interface{}, code int) {
 		return
 	}
 
-	var data = payloadData{
-		data: payload,
+	data := payloadData{
+		Data: payload,
 	}
 
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		zap.S().Warn(err)
+	}
 }

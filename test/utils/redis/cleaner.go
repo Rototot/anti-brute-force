@@ -5,7 +5,7 @@ import "context"
 func Clean() {
 	conn := Connection()
 
-	var ctx = context.Background()
+	ctx := context.Background()
 
 	err := conn.FlushAll(ctx).Err()
 	if err != nil {

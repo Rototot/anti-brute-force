@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"net"
+	"net/http"
+
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/httputils"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/queries"
-	"net"
-	"net/http"
 )
 
 type attemptHandler interface {
@@ -33,11 +34,12 @@ func (c *RateLimitController) Attempt(res http.ResponseWriter, req *http.Request
 
 	// parse
 	if err := c.grabber.grabBodyAndValidate(res, req, &query); err != nil {
-		httputils.Error(res, httputils.ErrJsonFormat, http.StatusBadRequest)
+		httputils.Error(res, httputils.ErrJSONFormat, http.StatusBadRequest)
+
 		return
 	}
 
-	var useCase = usecases.CheckLoginAttempt{
+	useCase := usecases.CheckLoginAttempt{
 		Login:    query.Login,
 		Password: query.Password,
 		IP:       net.ParseIP(query.IP),
@@ -45,6 +47,7 @@ func (c *RateLimitController) Attempt(res http.ResponseWriter, req *http.Request
 
 	if err := c.attemptHandler.Execute(useCase); err != nil {
 		httputils.Error(res, err, http.StatusInternalServerError)
+
 		return
 	}
 
@@ -56,22 +59,25 @@ func (c *RateLimitController) Reset(res http.ResponseWriter, req *http.Request) 
 
 	if err := json.NewDecoder(req.Body).Decode(&query); err != nil {
 		http.Error(res, "Invalid query", http.StatusBadRequest)
+
 		return
 	}
 
 	// validate
 	if err := c.validator.Struct(query); err != nil {
 		http.Error(res, "Invalid query", http.StatusBadRequest)
+
 		return
 	}
 
-	var useCase = usecases.ResetLoginAttempts{
+	useCase := usecases.ResetLoginAttempts{
 		Login: query.Login,
 		IP:    net.ParseIP(query.IP),
 	}
 
 	if err := c.resetAttemptsHandler.Execute(useCase); err != nil {
 		http.Error(res, "internal server error", http.StatusInternalServerError)
+
 		return
 	}
 

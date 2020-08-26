@@ -1,3 +1,3 @@
-package valueObjects
+package valueobjects
 
 type BucketID string

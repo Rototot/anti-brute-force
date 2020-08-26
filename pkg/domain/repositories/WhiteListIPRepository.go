@@ -1,8 +1,9 @@
 package repositories
 
 import (
-	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"net"
+
+	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 )
 
 //go:generate mockgen -source=$GOFILE -destination=./mocks/MockWhiteListIPRepository.go -package=mocks

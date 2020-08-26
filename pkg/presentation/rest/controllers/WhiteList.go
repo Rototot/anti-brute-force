@@ -1,11 +1,12 @@
-package controllers
+package controllers //nolint:dupl
 
 import (
+	"net"
+	"net/http"
+
 	"github.com/Rototot/anti-brute-force/pkg/application/usecases"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/httputils"
 	"github.com/Rototot/anti-brute-force/pkg/presentation/rest/queries"
-	"net"
-	"net/http"
 )
 
 type CreateWhiteListHandler interface {
@@ -13,7 +14,7 @@ type CreateWhiteListHandler interface {
 }
 
 type RemoveWhiteListHandler interface {
-	Execute(useCase usecases.RemoveIpFromWhiteList) error
+	Execute(useCase usecases.RemoveIPFromWhiteList) error
 }
 
 type WhiteListCrudController struct {
@@ -23,15 +24,22 @@ type WhiteListCrudController struct {
 	removeHandler RemoveWhiteListHandler
 }
 
-func NewWhiteListCrudController(validator StructValidator, createHandler CreateWhiteListHandler, removeHandler RemoveWhiteListHandler) *WhiteListCrudController {
-	return &WhiteListCrudController{grabber: grabber{validator: validator}, createHandler: createHandler, removeHandler: removeHandler}
+func NewWhiteListCrudController(
+	validator StructValidator,
+	createHandler CreateWhiteListHandler,
+	removeHandler RemoveWhiteListHandler,
+) *WhiteListCrudController {
+	return &WhiteListCrudController{
+		grabber:       grabber{validator: validator},
+		createHandler: createHandler,
+		removeHandler: removeHandler,
+	}
 }
 
-func (c *WhiteListCrudController) Index(res http.ResponseWriter, req *http.Request) {
-
+func (c *WhiteListCrudController) ListWhitelists(res http.ResponseWriter, req *http.Request) {
 }
 
-func (c *WhiteListCrudController) Create(res http.ResponseWriter, req *http.Request) {
+func (c *WhiteListCrudController) CreateWhitelist(res http.ResponseWriter, req *http.Request) {
 	var query queries.CreateWhiteListQuery
 
 	// parse
@@ -42,22 +50,24 @@ func (c *WhiteListCrudController) Create(res http.ResponseWriter, req *http.Requ
 	_, network, err := net.ParseCIDR(query.Subnet)
 	if err != nil || network == nil {
 		httputils.Error(res, httputils.ErrValidation, http.StatusBadRequest)
+
 		return
 	}
 
-	var useCase = usecases.AddIPToWhiteList{
+	useCase := usecases.AddIPToWhiteList{
 		Subnet: *network,
 	}
 
 	if err := c.createHandler.Execute(useCase); err != nil {
 		httputils.Error(res, err, http.StatusInternalServerError)
+
 		return
 	}
 
 	httputils.Response(res, nil, http.StatusNoContent)
 }
 
-func (c *WhiteListCrudController) Delete(res http.ResponseWriter, req *http.Request) {
+func (c *WhiteListCrudController) DeleteWhitelist(res http.ResponseWriter, req *http.Request) {
 	var query queries.DeleteWhiteListQuery
 
 	// parse
@@ -68,15 +78,17 @@ func (c *WhiteListCrudController) Delete(res http.ResponseWriter, req *http.Requ
 	_, network, err := net.ParseCIDR(query.Subnet)
 	if err != nil || network == nil {
 		httputils.Error(res, httputils.ErrValidation, http.StatusBadRequest)
+
 		return
 	}
 
-	var useCase = usecases.RemoveIpFromWhiteList{
+	useCase := usecases.RemoveIPFromWhiteList{
 		Subnet: *network,
 	}
 
 	if err := c.removeHandler.Execute(useCase); err != nil {
 		httputils.Error(res, err, http.StatusInternalServerError)
+
 		return
 	}
 

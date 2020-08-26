@@ -2,12 +2,15 @@ package postgres
 
 import (
 	"database/sql"
-	"github.com/Rototot/anti-brute-force/pkg/infrastructure/persistence/postgres"
 	"sync"
+
+	"github.com/Rototot/anti-brute-force/pkg/infrastructure/persistence/postgres"
 )
 
-var connectionOne sync.Once
-var connection *sql.DB
+var (
+	connectionOne sync.Once
+	connection    *sql.DB
+)
 
 func Connection() *sql.DB {
 	connectionOne.Do(func() {

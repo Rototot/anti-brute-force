@@ -11,22 +11,22 @@ const (
 type RedisConfig struct {
 	Host string
 	Port int
-	Db   int
+	DB   int
 }
 
 func NewRedisConfig(v *viper.Viper) *RedisConfig {
 	conf := &RedisConfig{
 		Host: v.GetString("APP_REDIS_HOST"),
 		Port: v.GetInt("APP_REDIS_PORT"),
-		Db:   v.GetInt("APP_REDIS_DB"),
+		DB:   v.GetInt("APP_REDIS_DB"),
 	}
 
 	if conf.Port == 0 {
 		conf.Port = defaultRedisPort
 	}
 
-	if conf.Db == 0 {
-		conf.Db = defaultRedisDB
+	if conf.DB == 0 {
+		conf.DB = defaultRedisDB
 	}
 
 	if conf.Host == "" {

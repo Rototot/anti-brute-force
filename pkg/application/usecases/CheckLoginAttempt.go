@@ -3,11 +3,12 @@
 package usecases
 
 import (
+	"net"
+
 	"github.com/Rototot/anti-brute-force/pkg/domain/constants"
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"github.com/Rototot/anti-brute-force/pkg/domain/repositories"
-	"github.com/Rototot/anti-brute-force/pkg/domain/valueObjects"
-	"net"
+	"github.com/Rototot/anti-brute-force/pkg/domain/valueobjects"
 )
 
 type CheckLoginAttempt struct {
@@ -28,19 +29,18 @@ type rateLimiter interface {
 	IsLimitExceeded(bucket *entities.Bucket) (bool, error)
 }
 
-type checkLoginAttemptHandler struct {
+type CheckLoginAttemptHandler struct {
 	bucketRepository repositories.BucketRepository
 	bucketFactory    bucketFactory
 	ipGuard          ipGuard
 	rateLimiter      rateLimiter
 }
 
-func NewCheckLoginAttemptHandler(bucketRepository repositories.BucketRepository, bucketFactory bucketFactory, ipGuard ipGuard, rateLimiter rateLimiter) *checkLoginAttemptHandler {
-	return &checkLoginAttemptHandler{bucketRepository: bucketRepository, bucketFactory: bucketFactory, ipGuard: ipGuard, rateLimiter: rateLimiter}
+func NewCheckLoginAttemptHandler(bucketRepository repositories.BucketRepository, bucketFactory bucketFactory, ipGuard ipGuard, rateLimiter rateLimiter) *CheckLoginAttemptHandler {
+	return &CheckLoginAttemptHandler{bucketRepository: bucketRepository, bucketFactory: bucketFactory, ipGuard: ipGuard, rateLimiter: rateLimiter}
 }
 
-func (h *checkLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
-
+func (h *CheckLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
 	hasAccess, err := h.ipGuard.HasAccess(useCase.IP)
 	if err != nil {
 		return err
@@ -52,13 +52,13 @@ func (h *checkLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
 
 	bucketInitializes := []func() (*entities.Bucket, error){
 		func() (*entities.Bucket, error) {
-			return h.findOrCreateBucket(valueObjects.BucketID(useCase.IP.String()), constants.BucketTypeIp)
+			return h.findOrCreateBucket(valueobjects.BucketID(useCase.IP.String()), constants.BucketTypeIp)
 		},
 		func() (*entities.Bucket, error) {
-			return h.findOrCreateBucket(valueObjects.BucketID(useCase.Login), constants.BucketTypeLogin)
+			return h.findOrCreateBucket(valueobjects.BucketID(useCase.Login), constants.BucketTypeLogin)
 		},
 		func() (*entities.Bucket, error) {
-			return h.findOrCreateBucket(valueObjects.BucketID(useCase.Password), constants.BucketTypePassword)
+			return h.findOrCreateBucket(valueobjects.BucketID(useCase.Password), constants.BucketTypePassword)
 		},
 	}
 
@@ -80,7 +80,7 @@ func (h *checkLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {
 	return nil
 }
 
-func (h *checkLoginAttemptHandler) findOrCreateBucket(id valueObjects.BucketID, bType constants.BucketType) (*entities.Bucket, error) {
+func (h *CheckLoginAttemptHandler) findOrCreateBucket(id valueobjects.BucketID, bType constants.BucketType) (*entities.Bucket, error) {
 	bucket, err := h.bucketRepository.FindOneByID(id)
 	if err != nil {
 		return nil, err

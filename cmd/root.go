@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -32,7 +32,7 @@ func initConfig() {
 }
 
 func newRootCmd() *cobra.Command {
-	var rootCmd = &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "anti-brute-force",
 		Short: "Service for control login attempts",
 	}

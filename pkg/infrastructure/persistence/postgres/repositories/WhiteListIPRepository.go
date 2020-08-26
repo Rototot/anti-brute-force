@@ -2,8 +2,9 @@ package repositories
 
 import (
 	"database/sql"
-	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"net"
+
+	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 )
 
 type WhiteListIPRepository struct {

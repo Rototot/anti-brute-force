@@ -33,9 +33,9 @@ func (m *MockBucketConfigurator) EXPECT() *MockBucketConfiguratorMockRecorder {
 }
 
 // IpBucketCapacity mocks base method
-func (m *MockBucketConfigurator) IpBucketCapacity() int {
+func (m *MockBucketConfigurator) IPBucketCapacity() int {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IpBucketCapacity")
+	ret := m.ctrl.Call(m, "IPBucketCapacity")
 	ret0, _ := ret[0].(int)
 	return ret0
 }
@@ -43,7 +43,7 @@ func (m *MockBucketConfigurator) IpBucketCapacity() int {
 // IpBucketCapacity indicates an expected call of IpBucketCapacity
 func (mr *MockBucketConfiguratorMockRecorder) IpBucketCapacity() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IpBucketCapacity", reflect.TypeOf((*MockBucketConfigurator)(nil).IpBucketCapacity))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IPBucketCapacity", reflect.TypeOf((*MockBucketConfigurator)(nil).IPBucketCapacity))
 }
 
 // LoginBucketCapacity mocks base method

@@ -2,8 +2,9 @@ package repositories
 
 import (
 	"database/sql"
-	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"net"
+
+	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 )
 
 type BlackListIPRepository struct {
@@ -15,31 +16,28 @@ func NewBlackListIPRepository(conn *sql.DB) *BlackListIPRepository {
 }
 
 func (r *BlackListIPRepository) Add(ip *entities.BlackListIP) error {
-	rows, err := r.conn.Query("INSERT INTO public.blacklists (subnet) VALUES (?) RETURNING id", ip.Subnet.String())
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
+	row := r.conn.QueryRow("INSERT INTO public.blacklists (subnet) VALUES (?) RETURNING id", ip.Subnet.String())
 
-	return rows.Scan(&ip.ID)
+	return row.Scan(&ip.ID)
 }
 
 func (r *BlackListIPRepository) Remove(ip *entities.BlackListIP) error {
-	_, err := r.conn.Query("DELETE FROM blacklists WHERE id = ?", ip.ID)
+	_, err := r.conn.Exec("DELETE FROM blacklists WHERE id = ?", ip.ID)
 
 	return err
 }
 
 func (r *BlackListIPRepository) FindBySubnet(subnet net.IPNet) (*entities.BlackListIP, error) {
-	row, err := r.conn.Query("SELECT * FROM blacklists WHERE subnet = ?", subnet.String())
-	if err != nil {
-		return nil, err
-	}
-
+	row := r.conn.QueryRow("SELECT * FROM blacklists WHERE subnet = ?", subnet.String())
 	entity := &entities.BlackListIP{}
 
-	err = row.Scan(&entity.ID, &entity.Subnet, &entity.Created)
-	if err != nil {
+	err := row.Scan(&entity.ID, &entity.Subnet, &entity.Created)
+	switch err {
+	case sql.ErrNoRows:
+		return nil, nil
+	case nil:
+		break
+	default:
 		return nil, err
 	}
 

@@ -1,25 +1,25 @@
 package usecases
 
 import (
+	"net"
+
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"github.com/Rototot/anti-brute-force/pkg/domain/repositories"
-	"net"
 )
 
 type AddIPToWhiteList struct {
 	Subnet net.IPNet
 }
 
-type addIPToWhiteListHandler struct {
+type AddIPToWhiteListHandler struct {
 	ipRepository repositories.WhiteListIPRepository
 }
 
-func NewAddIPToWhiteListHandler(ipRepository repositories.WhiteListIPRepository) *addIPToWhiteListHandler {
-	return &addIPToWhiteListHandler{ipRepository: ipRepository}
+func NewAddIPToWhiteListHandler(ipRepository repositories.WhiteListIPRepository) *AddIPToWhiteListHandler {
+	return &AddIPToWhiteListHandler{ipRepository: ipRepository}
 }
 
-func (h *addIPToWhiteListHandler) Execute(useCase AddIPToWhiteList) error {
-
+func (h *AddIPToWhiteListHandler) Execute(useCase AddIPToWhiteList) error {
 	ip, err := h.ipRepository.FindOneBySubnet(useCase.Subnet)
 	if err != nil {
 		return err
