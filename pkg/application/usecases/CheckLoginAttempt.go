@@ -7,7 +7,6 @@ import (
 
 	"github.com/Rototot/anti-brute-force/pkg/domain/constants"
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
-	"github.com/Rototot/anti-brute-force/pkg/domain/repositories"
 	"github.com/Rototot/anti-brute-force/pkg/domain/valueobjects"
 )
 
@@ -16,7 +15,6 @@ type CheckLoginAttempt struct {
 	Password string
 	IP       net.IP
 }
-
 type bucketFactory interface {
 	Create(bType constants.BucketType) (*entities.Bucket, error)
 }
@@ -30,14 +28,13 @@ type rateLimiter interface {
 }
 
 type CheckLoginAttemptHandler struct {
-	bucketRepository repositories.BucketRepository
-	bucketFactory    bucketFactory
-	ipGuard          ipGuard
-	rateLimiter      rateLimiter
+	bucketFactory bucketFactory
+	ipGuard       ipGuard
+	rateLimiter   rateLimiter
 }
 
-func NewCheckLoginAttemptHandler(bucketRepository repositories.BucketRepository, bucketFactory bucketFactory, ipGuard ipGuard, rateLimiter rateLimiter) *CheckLoginAttemptHandler {
-	return &CheckLoginAttemptHandler{bucketRepository: bucketRepository, bucketFactory: bucketFactory, ipGuard: ipGuard, rateLimiter: rateLimiter}
+func NewCheckLoginAttemptHandler(bucketFactory bucketFactory, ipGuard ipGuard, rateLimiter rateLimiter) *CheckLoginAttemptHandler {
+	return &CheckLoginAttemptHandler{bucketFactory: bucketFactory, ipGuard: ipGuard, rateLimiter: rateLimiter}
 }
 
 func (h *CheckLoginAttemptHandler) Execute(useCase CheckLoginAttempt) error {

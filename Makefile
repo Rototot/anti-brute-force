@@ -3,8 +3,10 @@ help:
 	@echo "make build - build app in docker"
 	@echo "make run - run app"
 	@echo "make test - run all tests"
+	@echo "make lint - run linter"
+	@echo "make lint-fix - run fix linter"
 
-
+### main public commands
 build:
 	docker-compose build
 
@@ -15,6 +17,13 @@ test: migrate-up-test test-units test-e2e
 	docker-compose run -f docker-compose.test.yaml --env-file .env.test --entrypoin "" app make test-units
 	docker-compose run -f docker-compose.test.yaml --env-file .env.test --entrypoin "" app make test-e2e
 
+### ci commands
+ci-build:
+	go generate
+	rm -r -f bin/*
+	go build -i -o bin/app .
+
+### dev commands
 test-units:
 	go test -race -count 100 ./... -v
 
@@ -36,11 +45,6 @@ lint:
 
 lint-fix:
 	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color alwaay run -v --fix ./..
-
-ci-build:
-	go generate
-	rm -r -f bin/*
-	go build -i -o bin/app .
 
 dev-run: dev-build
 	./bin/app
