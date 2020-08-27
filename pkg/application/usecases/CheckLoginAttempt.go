@@ -15,6 +15,7 @@ type CheckLoginAttempt struct {
 	Password string
 	IP       net.IP
 }
+
 type bucketFactory interface {
 	Create(bType constants.BucketType) (*entities.Bucket, error)
 }

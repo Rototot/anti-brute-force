@@ -1,12 +1,13 @@
-package usecases
+package usecases //nolint:dupl
 
 import (
+	"net"
+	"testing"
+
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"github.com/Rototot/anti-brute-force/pkg/domain/repositories/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"net"
-	"testing"
 )
 
 func TestAddIPToBlacklistHandler_Execute(t *testing.T) {

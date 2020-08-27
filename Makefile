@@ -41,10 +41,10 @@ migrate-up-test:
 	docker-compose -f docker-compose.test.yaml  --env-file .env.test run --no-deps migrate up
 
 lint:
-	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color always run -v
+	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color always run -v
 
 lint-fix:
-	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint --color alwaay run -v --fix ./..
+	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.30.0 golangci-lint run -v --fix
 
 dev-run: dev-build
 	./bin/app

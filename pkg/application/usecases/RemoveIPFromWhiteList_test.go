@@ -1,15 +1,17 @@
-package usecases
+package usecases //nolint:dupl
 
 import (
 	"errors"
+	"net"
+	"testing"
+
 	"github.com/Rototot/anti-brute-force/pkg/domain/entities"
 	"github.com/Rototot/anti-brute-force/pkg/domain/repositories/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
-	"net"
-	"testing"
 )
 
+//nolint:funlen
 func TestRemoveIPFromWhiteListHandler_Execute(t *testing.T) {
 	t.Run("when already exists ", func(t *testing.T) {
 		expectedIP := &entities.WhiteListIP{}
