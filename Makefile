@@ -26,7 +26,7 @@ migrate-create:
 	docker-compose run --no-deps migrate create -ext sql migration
 
 migrate-up:
-	docker-compose run --no-deps migrate up
+	docker-compose run migrate up
 
 migrate-up-test:
 	docker-compose -f docker-compose.test.yaml  --env-file .env.test run --no-deps migrate up
