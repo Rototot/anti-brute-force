@@ -72,7 +72,7 @@ func runHTTPServer(port int) error {
 	caseAddToWhitelist := usecases.NewAddIPToWhiteListHandler(ipWhiteListRepository)
 	caseRemoveFromWhitelist := usecases.NewRemoveIPFromWhiteListHandler(ipWhiteListRepository)
 
-	caseCheckAttempt := usecases.NewCheckLoginAttemptHandler(bucketRepository, bucketFactory, ipGuard, rateLimiter)
+	caseCheckAttempt := usecases.NewCheckLoginAttemptHandler(bucketFactory, ipGuard, rateLimiter)
 
 	caseResetAttempts := usecases.NewResetLoginAttemptsHandler(bucketRepository)
 
